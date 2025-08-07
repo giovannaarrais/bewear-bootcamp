@@ -1,8 +1,10 @@
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -23,6 +25,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
 
 const formSchema = z.object({
     email: z.email("Email inválido."),
@@ -40,7 +43,48 @@ const SignInForm = () => {
         },
     });
 
-    function onSubmit(values: FormValues) {
+    const router = useRouter()
+
+
+    // verificacoes se usuario para acesso 
+    async function onSubmit(values: FormValues) {
+        await authClient.signIn.email({
+            email: values.email,
+            password: values.password,
+            fetchOptions: {
+                // se logar com sucesso, leva para a home
+                onSuccess: () => {
+                    router.push("/")
+                },
+                onError: (error) => {
+                    // se o usuario nao for encontrado
+                    if(error.error.code == "USER_NOT_FOUND"){
+                        toast.error("E-mail nao encontrado");
+
+                        // error aparece no campo de email
+                        return form.setError("email", {
+                            message: "E-mail nao encontrado"
+                        });
+                    }
+                    
+                    // se o credencias forem inválidas
+                    if(error.error.code == "INVALID_EMAIL_OR_PASSWORD"){
+                        toast.error("E-mail ou senha inválidos");
+
+                        form.setError("password", {
+                            message: "Senha inválida"
+                        });
+
+                        return form.setError("email", {
+                            message: "E-mail inválido"
+                        });
+                    }
+
+                    toast.error(error.error.message)
+                }
+            }
+        })
+
         console.log(values);
     }
 
