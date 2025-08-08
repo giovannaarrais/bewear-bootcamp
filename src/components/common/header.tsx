@@ -22,7 +22,7 @@ const Header = () => {
     const { data: session } = authClient.useSession();
 
     return (
-        <header className="flex items-center justify-between p-5 shadow">
+        <header className="flex items-center justify-between p-5 shadow mb-5">
             <Link href="/">
                 <Image src="/logo.svg" alt="Logo Bewear" width={100} height={6.14} />
             </Link>
