@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -25,7 +26,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
 
 //validacoes dos campos
 const formSchema = z
@@ -61,9 +61,9 @@ const SignUpForm = () => {
     },
   });
 
-  const router = useRouter() // next/navigation
-  
-// está lidando com o processo de criação de conta
+  const router = useRouter(); // next/navigation
+
+  // está lidando com o processo de criação de conta
   async function onSubmit(values: FormValues) {
     await authClient.signUp.email({
       name: values.name, // required
@@ -72,17 +72,17 @@ const SignUpForm = () => {
       fetchOptions: {
         onSuccess: () => {
           // se user for criado com sucesso leva para a tela inicial
-          router.push("/")
+          router.push("/");
         },
         onError: (error) => {
           // se o erro for de um email ja existente
-          if(error.error.code == "USER_ALREADY_EXISTS"){
-            toast.error('E-mail já cadastrado');
+          if (error.error.code == "USER_ALREADY_EXISTS") {
+            toast.error("E-mail já cadastrado");
 
             // sinaliza o campo de email com a msg abaixo
             form.setError("email", {
               message: "E-mail ja cadastrado",
-            })
+            });
           }
 
           toast.error(error.error.message);

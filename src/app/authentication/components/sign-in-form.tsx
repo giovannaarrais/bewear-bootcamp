@@ -85,7 +85,6 @@ const SignInForm = () => {
             }
         })
 
-        console.log(values);
     }
 
     return (
