@@ -7,6 +7,7 @@ import { db } from "@/db";
 import { desc } from "drizzle-orm";
 import { productTable } from "@/db/schema";
 import Footer from "@/components/common/footer";
+import Parceiros from "@/components/common/parceiros";
 
 export default async function Home() {
   // capturar produtos do banco e suas variantes e categorias
@@ -41,6 +42,8 @@ export default async function Home() {
           sizes="100vw"
           className="h-auto w-full px-5"
         />
+
+        <Parceiros />
 
         <ProductsList products={products} title="Mais vendidos" />
 
