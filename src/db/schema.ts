@@ -93,7 +93,7 @@ export const productVariantTable = pgTable("product_variant", {
     slug: text().notNull().unique(),
     color: text().notNull(), // permite a busca pela cor
     priceInCents: integer("prince_in_cents").notNull(), // nessa logica salva o preço em centavos
-    imageUrl: text("image_url").notNull(),
+    imageUrl: text("image_url").array().notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(), //data de criação
 });
 
