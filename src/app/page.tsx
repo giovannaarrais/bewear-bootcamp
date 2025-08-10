@@ -1,23 +1,24 @@
 import Image from "next/image";
 
+import CategorySelector from "@/components/common/category-selector";
 import Header from "@/components/common/header";
 import ProductsList from "@/components/common/products-list";
-import { Button } from "@/components/ui/button";
 import { db } from "@/db";
 
 export default async function Home() {
-  
   // capturar produtos do banco e suas variantes e categorias
   const products = await db.query.productTable.findMany({
     with: {
       variants: true,
       category: true,
-    }
-  })
+    },
+  });
+
+  const categories = await db.query.categoryTable.findMany({})
 
   return (
     <>
-      <Header/> 
+      <Header />
 
       <div className="space-y-6">
         <Image
@@ -26,10 +27,14 @@ export default async function Home() {
           width={0}
           height={0}
           sizes="100vw"
-          className="h-auto w-full px-5 "
+          className="h-auto w-full px-5"
         />
 
-        <ProductsList products={products} title="Mais vendidos"/>
+        <ProductsList products={products} title="Mais vendidos" />
+
+        <div className="p-5">
+          <CategorySelector categories={categories}/>
+        </div>
 
         <Image
           src="/banner-2.png"
@@ -37,7 +42,7 @@ export default async function Home() {
           width={0}
           height={0}
           sizes="100vw"
-          className="h-auto w-full px-5 "
+          className="h-auto w-full px-5"
         />
       </div>
     </>
