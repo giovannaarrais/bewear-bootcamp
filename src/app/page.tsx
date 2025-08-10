@@ -4,6 +4,9 @@ import CategorySelector from "@/components/common/category-selector";
 import Header from "@/components/common/header";
 import ProductsList from "@/components/common/products-list";
 import { db } from "@/db";
+import { desc } from "drizzle-orm";
+import { productTable } from "@/db/schema";
+import Footer from "@/components/common/footer";
 
 export default async function Home() {
   // capturar produtos do banco e suas variantes e categorias
@@ -13,6 +16,15 @@ export default async function Home() {
       category: true,
     },
   });
+
+  // ordernacao decrescente das datas de criacao da table de produtos
+  const newlyCreatedProducts = await db.query.productTable.findMany({
+    orderBy: [desc(productTable.createdAt)],
+    limit: 4,
+    with: {
+      variants: true
+    }
+  })
 
   const categories = await db.query.categoryTable.findMany({})
 
@@ -44,7 +56,12 @@ export default async function Home() {
           sizes="100vw"
           className="h-auto w-full px-5"
         />
+
+          {/* EXIBICAO DA LISTA DE PRODUTOS MAIS RECENTES */}
+        <ProductsList products={newlyCreatedProducts} title="Novos Produtos" />
       </div>
+
+      <Footer />
     </>
   );
 }
