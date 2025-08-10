@@ -41,7 +41,7 @@ const Header = () => {
           <SheetContent>
             <SheetHeader>
               <SheetTitle>
-                <Menu></Menu>
+                Menu
               </SheetTitle>
             </SheetHeader>
 
