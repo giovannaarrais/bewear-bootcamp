@@ -4,14 +4,17 @@ import React from "react";
 
 import { productTable, productVariantTable } from "@/db/schema";
 import { FormatCentsToBRL } from "@/helpers/money";
+import { cn } from "@/lib/utils";
 
 interface ProductsItemProps {
     product: typeof productTable.$inferSelect & {
         variants: (typeof productVariantTable.$inferSelect)[];
     };
-    }
+// variavel q carrega estilo para outros components
+    textContainerClassName?: string;
+}
 
-    const ProductItem = ({ product }: ProductsItemProps) => {
+const ProductItem = ({ product, textContainerClassName }: ProductsItemProps) => {
     const firstVariant = product.variants[0];
 
     return (
@@ -19,17 +22,23 @@ interface ProductsItemProps {
             <Image
                 src={firstVariant.imageUrl[0]}
                 alt={firstVariant.name}
-                width={200}
-                height={200}
-                className="rounded-3xl"
+                sizes="100vw"
+                width={0}
+                height={0}
+                className="h-auto w-full rounded-3xl"
             />
 
-            <div className="flex flex-col gap-1 max-w-[200px]">
+{/* permite q em outros lugares q for reutilizar esse component seja possivel add mais estilo */}
+            <div className={cn(
+                "flex flex-col gap-1 max-w-[200px]",
+                textContainerClassName,
+                )}
+                >
                 {/* truncate: tres prontinhos para n ocorre quebra de texto */}
                 <p className="truncate text-sm font-medium">
                     {product.name}
                 </p>
-                <p className="font-muted-foreground truncate text-xs font-medium">
+                <p className="text-muted-foreground truncate text-xs font-medium">
                     {product.description}
                 </p>
                 <p className="truncate text-sm font-medium">
