@@ -11,6 +11,7 @@ import { db } from "@/db";
 import {  productTable, productVariantTable } from "@/db/schema";
 import { FormatCentsToBRL } from "@/helpers/money";
 import VariantSelector from "./components/variant-selector";
+import QuantitySelector from "./components/quantity-selector";
 
 interface ProductVariantPageProps {
     params: Promise<{ slug: string }>;
@@ -61,7 +62,11 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
 
             {/* VARIANTES */}
             <div className="px-5">
-                <VariantSelector variants={productVariant.product.variants}/>
+                <VariantSelector 
+                    variants={productVariant.product.variants} 
+                    selectedVariantSlug={productVariant.slug}
+                    //selectedVariantSlug -> identifica qual a variante selecionada
+                />
             </div>
 
             <div className="px-5 space-y-7 mb-6">
@@ -73,15 +78,17 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
                     <h2 className="text-muted-foreground text-sm">
                         {productVariant.name}
                     </h2>
-                    <h3 className="text-lg font-semibold">
-                        {FormatCentsToBRL(productVariant.priceInCents)}
-                    </h3>
+                    <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-semibold">
+                            {FormatCentsToBRL(productVariant.priceInCents)}
+                        </h3>
+                        {/* QUANTIDADE DESEJADA */}
+                        <div>
+                            <QuantitySelector />
+                        </div>
+                    </div>
                 </div>
 
-                {/* QUANTIDADE DESEJADA */}
-                <div>
-
-                </div>
                 
                 {/* ACOES */}
                 <div className="space-y-3 flex flex-col">
