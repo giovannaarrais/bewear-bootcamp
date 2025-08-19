@@ -3,10 +3,12 @@ import {
   boolean,
   integer,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+import { id } from "zod/v4/locales";
 
 export const userTable = pgTable("user", {
     id: text("id").primaryKey(),
@@ -107,7 +109,35 @@ export const productVariantTable = pgTable("product_variant", {
     createdAt: timestamp("created_at").notNull().defaultNow(), //data de criação
 });
 
+
+// ---------------- CARRINHO
+// tabela para o carrinho
+export const shippingAdressTable = pgTable("shopping_adress", {
+    id: uuid().primaryKey().defaultRandom(),
+    userId: text("user_id"). //para ter um carrinho depende de um usuario
+            notNull().
+            references(() => userTable.id, {onDelete: "cascade"}),//cascade -> todos os registros que dependem dele também serão deletados
+    recipientName: text().notNull(),
+    number: text().notNull(),
+    complement: text(),
+    city: text().notNull(),
+    state: text().notNull(),
+    neighborhood: text().notNull(),
+    zipCode: text().notNull(), //cep
+    country: text().notNull(),
+    phone: text().notNull(),
+    email: text().notNull(),
+    cpfOrCnpj: text().notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("update_at").notNull().defaultNow(),
+})
+
 // ---------------- Relacionamentos
+
+// um usuario pode ter varios endereços
+export const userRelations = relations(userTable, ({ many }) => ({
+    shippingAdressTable: many(shippingAdressTable)
+}))
 
 // uma categoria pode ter varios produtos
 export const categoryRelations = relations(categoryTable, ({ many }) => ({
@@ -134,3 +164,14 @@ export const productVariantRelations = relations(
         }),
     }),
 );
+
+// o userId da tabela de endereço se referencia ao id da tabela de usuario
+export const shippingAdressTableRelations = relations(
+    shippingAdressTable,
+    ({one}) => ({
+        user: one(userTable, {
+            fields: [shippingAdressTable.userId],
+            references: [userTable.id]
+        })
+    })
+)
