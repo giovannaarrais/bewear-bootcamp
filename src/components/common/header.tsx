@@ -16,6 +16,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
+import Cart from "./cart";
 
 const Header = () => {
   //pegar sessao do user q esta ativa
@@ -27,8 +28,12 @@ const Header = () => {
         <Image src="/logo.svg" alt="Logo Bewear" width={100} height={6.14} />
       </Link>
 
-      <div className="flex items-center">
+      <div className="flex items-center space-x-2">
         {/* ao clicar vai abri o offcanvas -> sheet(shadcn) */}
+
+        {/* BOTAO CARRINHO DE COMPRAS */}
+        <Cart  />
+
         <Sheet>
           {/* sheet trigger botao com acao */}
           <SheetTrigger asChild>

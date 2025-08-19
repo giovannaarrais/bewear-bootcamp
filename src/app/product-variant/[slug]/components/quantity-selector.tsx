@@ -5,8 +5,6 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 
-// Biblioteca nuqs -> registra o dado na url localhost:8080/product?quantity=10
-// vamos salvar a quantidade dentro da url
 const QuantitySelector = () => {
     const [quantity, setQuantity] = useState(1)
 

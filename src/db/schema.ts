@@ -1,22 +1,24 @@
 import { relations } from "drizzle-orm";
 import {
-  boolean,
-  integer,
-  pgTable,
-  primaryKey,
-  text,
-  timestamp,
-  uuid,
+    boolean,
+    integer,
+    pgTable,
+    primaryKey,
+    text,
+    timestamp,
+    uuid,
 } from "drizzle-orm/pg-core";
-import { id } from "zod/v4/locales";
+import { Quantico } from "next/font/google";
+import { number } from "zod";
+
 
 export const userTable = pgTable("user", {
     id: text("id").primaryKey(),
     name: text("name").notNull(),
     email: text("email").notNull().unique(),
     emailVerified: boolean("email_verified")
-    .$defaultFn(() => false)
-    .notNull(),
+        .$defaultFn(() => false)
+        .notNull(),
     image: text("image"),
     createdAt: timestamp("created_at")
         .$defaultFn(() => /* @__PURE__ */ new Date())
@@ -40,14 +42,17 @@ export const sessionTable = pgTable("session", {
 });
 
 export const verificationTable = pgTable("verification", {
-    id: text('id').primaryKey(),
-    identifier: text('identifier').notNull(),
-    value: text('value').notNull(),
-    expiresAt: timestamp('expires_at').notNull(),
-    createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()),
-    updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date())
+    id: text("id").primaryKey(),
+    identifier: text("identifier").notNull(),
+    value: text("value").notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").$defaultFn(
+        () => /* @__PURE__ */ new Date(),
+    ),
+    updatedAt: timestamp("updated_at").$defaultFn(
+        () => /* @__PURE__ */ new Date(),
+    ),
 });
-
 
 export const accountTable = pgTable("account", {
     id: text("id").primaryKey(),
@@ -82,9 +87,9 @@ export const productTable = pgTable("product", {
     id: uuid().primaryKey().defaultRandom(),
     categoryId: uuid("category_id")
         .notNull()
-        .references(() => categoryTable.id, {onDelete: 'set null'}), // esse registro é a relacao q existe com a table de categorias
-        //set null -> for deletado da tabela productTable, o campo productId nas tabelas relacionadas será setado como null.
-        
+        .references(() => categoryTable.id, { onDelete: "set null" }), // esse registro é a relacao q existe com a table de categorias
+    //set null -> for deletado da tabela productTable, o campo productId nas tabelas relacionadas será setado como null.
+
     name: text().notNull(),
     slug: text().notNull().unique(), // faz parte da url, contribui no SEO
     description: text().notNull(),
@@ -99,8 +104,8 @@ export const productVariantTable = pgTable("product_variant", {
     id: uuid().primaryKey().defaultRandom(),
     productId: uuid("product_id")
         .notNull()
-        .references(() => productTable.id, {onDelete: "cascade"}),
-        //cascade -> todos os registros que dependem dele também serão deletados
+        .references(() => productTable.id, { onDelete: "cascade" }),
+    //cascade -> todos os registros que dependem dele também serão deletados
     name: text().notNull(),
     slug: text().notNull().unique(),
     color: text().notNull(), // permite a busca pela cor
@@ -109,14 +114,13 @@ export const productVariantTable = pgTable("product_variant", {
     createdAt: timestamp("created_at").notNull().defaultNow(), //data de criação
 });
 
-
-// ---------------- CARRINHO
-// tabela para o carrinho
-export const shippingAdressTable = pgTable("shopping_adress", {
+// ---------------------- ENDEREÇO -----------------------------
+// tabela para o ENDEREÇO
+export const shippingAddressTable = pgTable("shopping_adress", {
     id: uuid().primaryKey().defaultRandom(),
-    userId: text("user_id"). //para ter um carrinho depende de um usuario
-            notNull().
-            references(() => userTable.id, {onDelete: "cascade"}),//cascade -> todos os registros que dependem dele também serão deletados
+    userId: text("user_id") //para ter um ENDEREÇO depende de um usuario
+        .notNull()
+        .references(() => userTable.id, { onDelete: "cascade" }), //cascade -> todos os registros que dependem dele também serão deletados
     recipientName: text().notNull(),
     number: text().notNull(),
     complement: text(),
@@ -130,14 +134,44 @@ export const shippingAdressTable = pgTable("shopping_adress", {
     cpfOrCnpj: text().notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("update_at").notNull().defaultNow(),
-})
+});
 
-// ---------------- Relacionamentos
+// ------------------------ CARRINHO -----------------------------
+export const cartTable = pgTable("cart", {
+    id: uuid().primaryKey().defaultRandom(),
+    userId: text("user_id") // um carrinho sempre vai ter um usuário
+        .notNull()
+        .references(() => userTable.id, { onDelete: "cascade" }), //cascade -> todos os registros que dependem dele também serão deletados
+    shippingAddressId: uuid("shipping_address_id").references(
+        () => shippingAddressTable.id,
+        { onDelete: "set null" },
+    ),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+});
 
-// um usuario pode ter varios endereços
-export const userRelations = relations(userTable, ({ many }) => ({
-    shippingAdressTable: many(shippingAdressTable)
-}))
+// ------------------------ PRODUTOS DO CARRINHO -----------------------------
+export const cartItemTable = pgTable("cart_item", {
+    id: uuid().primaryKey().defaultRandom(),
+    cartId: uuid("card_id") 
+        .notNull()
+        .references(() => cartTable.id, { onDelete: "cascade" }), 
+    productVariantId: uuid("product_variant_id")
+        .notNull().
+        references(() => productVariantTable.id, {onDelete: "cascade"}),
+    quantity: integer("quantity").notNull().default(1), // por padrao o produto vai ter qtd 1
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// ------------------------ Relacionamentos ----------------------
+
+// um usuario pode ter varios endereços e apenas um carrinho
+export const userRelations = relations(userTable, ({ many, one }) => ({
+    shippingAddressTable: many(shippingAddressTable),
+    cart: one(cartTable, {
+        fields: [userTable.id],
+        references: [cartTable.userId]
+    }),
+}));
 
 // uma categoria pode ter varios produtos
 export const categoryRelations = relations(categoryTable, ({ many }) => ({
@@ -166,12 +200,44 @@ export const productVariantRelations = relations(
 );
 
 // o userId da tabela de endereço se referencia ao id da tabela de usuario
-export const shippingAdressTableRelations = relations(
-    shippingAdressTable,
-    ({one}) => ({
+export const shippingAddressRelations = relations(shippingAddressTable,
+    ({ one }) => ({
         user: one(userTable, {
-            fields: [shippingAdressTable.userId],
-            references: [userTable.id]
+        fields: [shippingAddressTable.userId],
+        references: [userTable.id],
+        }),
+        // um endereço sempre vai pertencer a um carrinho
+        cart: one(cartTable, {
+            fields: [shippingAddressTable.id],
+            references: [cartTable.shippingAddressId]
         })
+    }),
+);
+
+// carrinho vai ter um usuario e um endereço
+export const cartRelations = relations(cartTable, ({ one, many }) => ({
+    user: one(userTable, {
+        fields: [cartTable.userId],
+        references: [userTable.id],
+    }),
+    shippingAddress: one(shippingAddressTable, {
+        fields: [cartTable.shippingAddressId],
+        references: [shippingAddressTable.id],
+    }),
+    // um caarrinho vai ter varios itens
+    items: many(cartItemTable)
+}));
+
+
+
+// itens do carrinho
+export const cartItemRelations = relations(cartItemTable, ({ one }) => ({
+    cart: one(cartTable, {
+        fields: [cartItemTable.id],
+        references: [cartTable.id],
+    }),
+    productVariantId: one(productVariantTable, {
+        fields: [cartItemTable.productVariantId],
+        references: [productVariantTable.id],
     })
-)
+}));
