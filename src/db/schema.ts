@@ -224,8 +224,8 @@ export const cartRelations = relations(cartTable, ({ one, many }) => ({
         fields: [cartTable.shippingAddressId],
         references: [shippingAddressTable.id],
     }),
-    // um caarrinho vai ter varios itens
-    items: many(cartItemTable)
+    // um carrinho vai ter varios itens
+    items: many(cartItemTable),
 }));
 
 

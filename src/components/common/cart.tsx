@@ -21,6 +21,7 @@ const Cart = () => {
     queryKey: ["cart"],
     queryFn: () => getCart(), // funcao q vai pegar os dados do carrinho src\actions\get-cart\index.ts
   });
+  
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -33,7 +34,9 @@ const Cart = () => {
         <SheetHeader>
           <SheetTitle>Carrinho</SheetTitle>
         </SheetHeader>
+
         <div>
+        {cartIsLoading && <div>Caregando...</div>}
           {cart?.items.map((item) => (
             <div key={item.id}>
               <Image

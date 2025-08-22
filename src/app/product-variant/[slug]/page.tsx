@@ -8,10 +8,13 @@ import Header from "@/components/common/header";
 import ProductsList from "@/components/common/products-list";
 import { Button } from "@/components/ui/button";
 import { db } from "@/db";
-import {  productTable, productVariantTable } from "@/db/schema";
+import {  cartItemTable, cartTable, productTable, productVariantTable } from "@/db/schema";
 import { FormatCentsToBRL } from "@/helpers/money";
-import VariantSelector from "./components/variant-selector";
+
+import AddToCartButton from "./components/add-to-cart-button";
+import ProductActions from "./components/product-actions";
 import QuantitySelector from "./components/quantity-selector";
+import VariantSelector from "./components/variant-selector";
 
 interface ProductVariantPageProps {
     params: Promise<{ slug: string }>;
@@ -82,23 +85,13 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
                         <h3 className="text-lg font-semibold">
                             {FormatCentsToBRL(productVariant.priceInCents)}
                         </h3>
-                        {/* QUANTIDADE DESEJADA */}
-                        <div>
-                            <QuantitySelector />
-                        </div>
+                    
                     </div>
                 </div>
 
                 
                 {/* ACOES */}
-                <div className="space-y-3 flex flex-col">
-                    <Button variant="outline" className="rounded-3xl py-6 font-semibold"> 
-                        Adicionar à sacola 
-                    </Button>
-                    <Button variant="default" className="rounded-3xl py-6 font-semibold"> 
-                        Comprar Agora 
-                    </Button>
-                </div>
+                <ProductActions productVariantId={productVariant.id}/>
 
                 <div className="">
                     <p className="text-sm">

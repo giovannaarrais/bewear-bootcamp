@@ -3,6 +3,7 @@
 import { headers } from "next/headers"
 
 import { db } from "@/db"
+import { cartTable } from "@/db/schema"
 import { auth } from "@/lib/auth"
 
 export const getCart = async () => {
@@ -27,6 +28,20 @@ export const getCart = async () => {
             }
         }
     })
+
+    //se nao tiver um carrinho, vai ser criado
+    if (!cart){
+        const [newCart] = await db
+        .insert(cartTable)
+        .values({
+            userId: session.user.id,
+        }).returning();
+
+        return {
+            ...newCart,
+            items: [],
+        }
+    }
 
     return cart
 }

@@ -1,13 +1,14 @@
-import { cartItemTable, cartTable } from './../../db/schema';
 "use server"
-
 import { eq } from 'drizzle-orm';
 import { headers } from "next/headers"
 
 import { db } from '@/db';
 import { auth } from "@/lib/auth"
 
+import { cartItemTable, cartTable } from './../../db/schema';
 import { addProductToCartSchema } from "./schema"
+import { useQuery } from '@tanstack/react-query';
+import { getCart } from '../get-cart';
 
 // Função para adicionar um produto ao carrinho
 export const addProductToCart = async (data: addProductToCartSchema) => {
