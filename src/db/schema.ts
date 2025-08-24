@@ -116,7 +116,7 @@ export const productVariantTable = pgTable("product_variant", {
 
 // ---------------------- ENDEREÇO -----------------------------
 // tabela para o ENDEREÇO
-export const shippingAddressTable = pgTable("shopping_adress", {
+export const shippingAddressTable = pgTable("shipping_adress", {
     id: uuid().primaryKey().defaultRandom(),
     userId: text("user_id") //para ter um ENDEREÇO depende de um usuario
         .notNull()
@@ -152,7 +152,7 @@ export const cartTable = pgTable("cart", {
 // ------------------------ PRODUTOS DO CARRINHO -----------------------------
 export const cartItemTable = pgTable("cart_item", {
     id: uuid().primaryKey().defaultRandom(),
-    cartId: uuid("card_id") 
+    cartId: uuid("cart_id") 
         .notNull()
         .references(() => cartTable.id, { onDelete: "cascade" }), 
     productVariantId: uuid("product_variant_id")
