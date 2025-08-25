@@ -233,7 +233,7 @@ export const cartRelations = relations(cartTable, ({ one, many }) => ({
 // itens do carrinho
 export const cartItemRelations = relations(cartItemTable, ({ one }) => ({
     cart: one(cartTable, {
-        fields: [cartItemTable.id],
+        fields: [cartItemTable.cartId],
         references: [cartTable.id],
     }),
     productVariant: one(productVariantTable, {
