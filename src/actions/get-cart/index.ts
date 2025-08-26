@@ -40,8 +40,17 @@ export const getCart = async () => {
         return {
             ...newCart,
             items: [],
+            totalPriceInCents: 0,
         }
     }
 
-    return cart
+    // retorna o carrinho e o valor total do carrinho
+    // recomendado sempre fazer calculos dentro do SERVER -> BE
+    return {
+        ...cart,
+        totalPriceInCents: cart.items.reduce(
+            (acc, item) => acc + item.productVariant.priceInCents * item.quantity, 
+            0 // ← VALOR INICIAL AQUI
+        )
+    }
 }
