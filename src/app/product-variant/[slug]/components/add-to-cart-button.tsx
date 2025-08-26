@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import React from "react";
 
@@ -14,6 +14,9 @@ interface AddProductToCartProps{
 }
 
 const AddToCartButton = ({ productVariantId, quantity }: AddProductToCartProps) => {
+    
+    const queryClient = useQueryClient();
+
   // useMutation: propriedade do react query, onde lida com mudanças frenquentes: adicao, delete...
     const {mutate, isPending} = useMutation({
         mutationKey: ["addProductToCart", productVariantId, quantity],
@@ -21,8 +24,12 @@ const AddToCartButton = ({ productVariantId, quantity }: AddProductToCartProps) 
         addProductToCart({
             productVariantId,
             quantity
-        })
-        ,
+        }),
+        onSuccess: () => {
+            // informa para o react refazer todas a queries dessa chave cart, ou seja
+            // auxilia na adicao de produtos, onde estantaneamente quando add um produto ele ja vai estar no carrinho
+            queryClient.invalidateQueries({queryKey: ['cart']})
+        }
     });
 
     return (

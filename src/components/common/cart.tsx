@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sheet";
 
 import { Button } from "../ui/button";
+import CartItem from "./cart-item";
 
 // como os dados mudam frequentement, vamos usar o react query
 const Cart = () => {
@@ -35,20 +36,18 @@ const Cart = () => {
           <SheetTitle>Carrinho</SheetTitle>
         </SheetHeader>
 
-        <div>
+        <div className="p-2 pt-0">
         {cartIsLoading && <div>Caregando...</div>}
           {cart?.items.map((item) => (
-            <div key={item.id}>
-              <Image
-                src={item.productVariant.imageUrl[0]}
-                alt={item.productVariant.product.name}
-                width={100}
-                height={100}
-              />
-              <div>
-                <h3>{item.productVariant.product.name}</h3>
-              </div>
-            </div>
+            <CartItem 
+              key={item.id}
+              id={item.id}
+              productName={item.productVariant.product.name}
+              productVariantName={item.productVariant.name}
+              productVariantImageUrl={item.productVariant.imageUrl[0]}
+              productVariantPriceInCents={item.productVariant.priceInCents}
+              quantity={item.quantity}
+            />
           ))}
         </div>
       </SheetContent>
