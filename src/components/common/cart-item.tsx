@@ -1,8 +1,14 @@
-import Image from 'next/image';
-import React, { useState } from 'react';
-import { Button } from '../ui/button';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Trash2Icon } from 'lucide-react';
+import Image from 'next/image';
+import React from 'react';
+import { toast } from 'sonner';
+import { any, string } from 'zod';
+
+import { removeProductFromCart } from '@/actions/remove-cart-product';
 import { FormatCentsToBRL } from '@/helpers/money';
+
+import { Button } from '../ui/button';
 
 
 interface CartItemProps {
@@ -16,25 +22,36 @@ interface CartItemProps {
 }
 
 const CartItem = ({
-    id,
-    productName, 
-    productVariantName, 
-    productVariantImageUrl, 
-    productVariantPriceInCents, 
-    quantity}: CartItemProps) => {
+        id,
+        productName, 
+        productVariantName, 
+        productVariantImageUrl, 
+        productVariantPriceInCents, 
+        quantity
+    }: CartItemProps) => {
 
-    // const [quantityProduct, setQuantityProduct] = useState(1)
+    // utilizado para quando add produto ele ja ser visivel no cart sem necessidade de reload
+    const queryClient = useQueryClient()
 
-    // // // funcao para diminuir quantidade, so funcionar se for mais que 1
-    // // function subNumber(){
-    // //     setQuantityProduct((prev) => (prev > 1 ? prev - 1 : prev))
-    // // }
+    // remover produto do carirnho
+    const removeProductFromCartMutation = useMutation({
+        mutationKey: ['remove-cart-product'],
+        mutationFn: () => removeProductFromCart({ cartItemId: id }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['cart']})
+        }
+    })
 
-    // // // funcao para aumentar quantidade
-    // // function moreNumber(){
-    // //     setQuantityProduct((prev) => prev + 1)
-    // // }
-
+    const handleDeleteClick = () => {
+        removeProductFromCartMutation.mutate(undefined, {
+            onSuccess: () => {
+                toast.success('Produto removido do carrinho')
+            },
+            onError: () => {
+                toast.success('Falha ao tentar remover produto do carrinho')
+            }
+        });
+    }
 
     return (
         <div className='flex items-center justify-between mb-4'>
@@ -72,7 +89,7 @@ const CartItem = ({
 
             </div>
             <div className="flex flex-col justify-between items-end gap-2">
-                <Button variant='ghost' className=" text-gray-700">
+                <Button variant='ghost' className=" text-gray-700" onClick={handleDeleteClick}>
                     <Trash2Icon size={20}/>
                 </Button>
                 <div className="text-md font-semibold">
