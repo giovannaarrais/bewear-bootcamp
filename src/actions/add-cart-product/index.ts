@@ -7,8 +7,6 @@ import { auth } from "@/lib/auth"
 
 import { cartItemTable, cartTable } from './../../db/schema';
 import { addProductToCartSchema } from "./schema"
-import { useQuery } from '@tanstack/react-query';
-import { getCart } from '../get-cart';
 
 // Função para adicionar um produto ao carrinho
 export const addProductToCart = async (data: addProductToCartSchema) => {
@@ -66,11 +64,13 @@ export const addProductToCart = async (data: addProductToCartSchema) => {
 
     // Se o produto já está no carrinho, só aumentamos a quantidade
     if(cartItem){
-        await db.update(cartItemTable).set({
-            quantity: cartItem.quantity + data.quantity // somamos a quantidade nova
-        }).where(
-            eq(cartItemTable.id, cartItem.id)
-        )
+        await db
+            .update(cartItemTable)
+            .set({
+                quantity: cartItem.quantity + data.quantity // somamos a quantidade nova
+            })
+            .where(eq(cartItemTable.id, cartItem.id))
+
         return; // terminamos aqui, não precisa adicionar de novo
     }
 

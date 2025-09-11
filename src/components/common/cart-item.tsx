@@ -3,8 +3,8 @@ import { Trash2Icon } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import { toast } from "sonner";
-import { any, string } from "zod";
 
+import { addProductToCart } from "@/actions/add-cart-product";
 import { decreaseCartProductQuantity } from "@/actions/decrease-cart-product-quantity";
 import { removeProductFromCart } from "@/actions/remove-cart-product";
 import { FormatCentsToBRL } from "@/helpers/money";
@@ -12,8 +12,9 @@ import { FormatCentsToBRL } from "@/helpers/money";
 import { Button } from "../ui/button";
 
 interface CartItemProps {
-  id: number;
+  id: string;
   productName: string;
+  productVariantId: string;
   productVariantName: string;
   productVariantImageUrl: string;
   productVariantPriceInCents: number;
@@ -23,6 +24,7 @@ interface CartItemProps {
 const CartItem = ({
   id,
   productName,
+  productVariantId,
   productVariantName,
   productVariantImageUrl,
   productVariantPriceInCents,
@@ -51,6 +53,7 @@ const CartItem = ({
     });
   };
 
+  // diminuir quantidade do produto
   const decreaseCartProductQuantityMutation = useMutation({
     mutationKey: ["decrease-cart-product-quantity"],
     mutationFn: () => decreaseCartProductQuantity({ cartItemId: id }),
@@ -63,6 +66,26 @@ const CartItem = ({
     decreaseCartProductQuantityMutation.mutate(undefined, {
       onSuccess: () => {
         toast.success("Quantidade do produto diminuída");
+      },
+    });
+  };
+
+  // aumentar quantidade do produto
+  const increaseCartProductQuantityMutation = useMutation({
+    mutationKey: ["increase-cart-product-quantity"],
+    mutationFn: () => addProductToCart({ productVariantId, quantity: 1 }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+
+  const handleIncreaseProductQuantityClick = () => {
+    increaseCartProductQuantityMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Quantidade do produto aumentada");
+      },
+      onError: () => {
+        toast.success("Falha ao tentar aumentar quantidade do produto");
       },
     });
   };
@@ -98,7 +121,7 @@ const CartItem = ({
             <span className="px-2 text-xs">{quantity}</span>
 
             <Button
-              onClick={() => {}}
+              onClick={handleIncreaseProductQuantityClick}
               variant="outline"
               className="h-[26px] px-2 py-1"
             >

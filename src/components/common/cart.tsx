@@ -11,12 +11,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { FormatCentsToBRL } from "@/helpers/money";
 
 import { Button } from "../ui/button";
-import CartItem from "./cart-item";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
-import { FormatCentsToBRL } from "@/helpers/money";
+import CartItem from "./cart-item";
 
 // como os dados mudam frequentement, vamos usar o react query
 const Cart = () => {
@@ -25,7 +25,7 @@ const Cart = () => {
     queryKey: ["cart"],
     queryFn: () => getCart(), // funcao q vai pegar os dados do carrinho src\actions\get-cart\index.ts
   });
-  
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -39,52 +39,55 @@ const Cart = () => {
           <SheetTitle>Carrinho</SheetTitle>
         </SheetHeader>
 
-          <div className="flex h-full flex-col gap-8 p-3 pt-0">
-            <div className="flex h-full max-h-full flex-col gap-5 overflow-hidden">
-                <ScrollArea className="h-full">
-                  <div className="flex h-full flex-col ">
-                    {cartIsLoading && <div>Caregando...</div>}
-                    {cart?.items.map((item) => (
-                      <CartItem 
-                        key={item.id}
-                        id={item.id}
-                        productName={item.productVariant.product.name}
-                        productVariantName={item.productVariant.name}
-                        productVariantImageUrl={item.productVariant.imageUrl[0]}
-                        productVariantPriceInCents={item.productVariant.priceInCents}
-                        quantity={item.quantity}
-                      />
-                    ))}
-                  </div>
-                </ScrollArea>
-            </div>
-
-            {cart?.items && cart?.items.length > 0 && (
-              <div className="flex flex-col gap-4">
-                <Separator />
-                <div className="flex items-center justify-between text-xs font-medium">
-                  <p>Subtotal</p>
-                  <p>{FormatCentsToBRL(cart.totalPriceInCents ?? 0)}</p>
-                </div>
-
-                <Separator />
-                <div className="flex items-center justify-between text-xs font-medium">
-                  <p>Entrega</p>
-                  <p>GRÁTIS</p>
-                </div>
-
-                <Separator />
-                  <div className="flex items-center justify-between text-xs font-medium">
-                    <p>Total</p>
-                    <p>{FormatCentsToBRL(cart.totalPriceInCents ?? 0)}</p>
-                  </div>
-
-                  <Button variant='default' className="rounded-full mt-4">
-                    Finalizar Compra
-                  </Button>
+        <div className="flex h-full flex-col gap-8 p-3 pt-0">
+          <div className="flex h-full max-h-full flex-col gap-5 overflow-hidden">
+            <ScrollArea className="h-full">
+              <div className="flex h-full flex-col">
+                {cartIsLoading && <div>Caregando...</div>}
+                {cart?.items.map((item) => (
+                  <CartItem
+                    key={item.id}
+                    id={item.id}
+                    productVariantId={item.productVariant.id}
+                    productName={item.productVariant.product.name}
+                    productVariantName={item.productVariant.name}
+                    productVariantImageUrl={item.productVariant.imageUrl[0]}
+                    productVariantPriceInCents={
+                      item.productVariant.priceInCents
+                    }
+                    quantity={item.quantity}
+                  />
+                ))}
               </div>
-            )}
+            </ScrollArea>
           </div>
+
+          {cart?.items && cart?.items.length > 0 && (
+            <div className="flex flex-col gap-4">
+              <Separator />
+              <div className="flex items-center justify-between text-xs font-medium">
+                <p>Subtotal</p>
+                <p>{FormatCentsToBRL(cart.totalPriceInCents ?? 0)}</p>
+              </div>
+
+              <Separator />
+              <div className="flex items-center justify-between text-xs font-medium">
+                <p>Entrega</p>
+                <p>GRÁTIS</p>
+              </div>
+
+              <Separator />
+              <div className="flex items-center justify-between text-xs font-medium">
+                <p>Total</p>
+                <p>{FormatCentsToBRL(cart.totalPriceInCents ?? 0)}</p>
+              </div>
+
+              <Button variant="default" className="mt-4 rounded-full">
+                Finalizar Compra
+              </Button>
+            </div>
+          )}
+        </div>
       </SheetContent>
     </Sheet>
   );
