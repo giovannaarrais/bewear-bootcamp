@@ -10,6 +10,7 @@ import { removeProductFromCart } from "@/actions/remove-cart-product";
 import { FormatCentsToBRL } from "@/helpers/money";
 
 import { Button } from "../ui/button";
+import { useRemoveProductFromCart } from "@/hooks/mutations/use-remove-product-from-cart";
 
 interface CartItemProps {
   id: string;
@@ -34,13 +35,8 @@ const CartItem = ({
   const queryClient = useQueryClient();
 
   // remover produto do carirnho
-  const removeProductFromCartMutation = useMutation({
-    mutationKey: ["remove-cart-product"],
-    mutationFn: () => removeProductFromCart({ cartItemId: id }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-    },
-  });
+  // utilizando do hook de uma mutation reutilizavel useRemoveProductFromCart
+  const removeProductFromCartMutation = useRemoveProductFromCart(id)
 
   const handleDeleteClick = () => {
     removeProductFromCartMutation.mutate(undefined, {

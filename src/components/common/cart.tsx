@@ -12,6 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { FormatCentsToBRL } from "@/helpers/money";
+import { useCart } from "@/hooks/queries/use-cart";
 
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
@@ -21,10 +22,8 @@ import CartItem from "./cart-item";
 // como os dados mudam frequentement, vamos usar o react query
 const Cart = () => {
   //uma chamada q vai obter dados
-  const { data: cart, isPending: cartIsLoading } = useQuery({
-    queryKey: ["cart"],
-    queryFn: () => getCart(), // funcao q vai pegar os dados do carrinho src\actions\get-cart\index.ts
-  });
+  // utilizando o hook useCart do arq src\hooks\queries\use-cart.ts
+  const { data: cart, isPending: cartIsLoading } = useCart();
 
   return (
     <Sheet>
