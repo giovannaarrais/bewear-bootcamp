@@ -18,6 +18,8 @@ import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import CartItem from "./cart-item";
+import Link from "next/link";
+import IdentificatonPage from "@/app/cart/identification/page";
 
 // como os dados mudam frequentement, vamos usar o react query
 const Cart = () => {
@@ -81,8 +83,10 @@ const Cart = () => {
                 <p>{FormatCentsToBRL(cart.totalPriceInCents ?? 0)}</p>
               </div>
 
-              <Button variant="default" className="mt-4 rounded-full">
-                Finalizar Compra
+              <Button variant="default" className="mt-4 rounded-full" asChild>
+                <Link href='/cart/identification'>
+                  Finalizar Compra
+                </Link>
               </Button>
             </div>
           )}
