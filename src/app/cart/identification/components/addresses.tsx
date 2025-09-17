@@ -1,50 +1,57 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { error } from "console";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { PatternFormat } from 'react-number-format';
+import { PatternFormat } from "react-number-format";
+import { toast } from "sonner";
 import z, { email, number } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
-// form schema
-// email
-// fullName
-// cpf
-// phone
-// zipcode
-// address
-// number
-// complement
-// neighborhood
-// city
-// state
+import {
+  getCreateShippingAddressMutationKey,
+  useCreateShippingAddress,
+} from "@/hooks/mutations/use-create-shipping-address";
 
 const formSchema = z.object({
   email: z.email("E-mail inválido"),
   fullName: z.string().min(1, "Nome completo é obrigatório"),
-  cpf: z.string().min(14, 'CPF Inválido'),
-  phone: z.string().min(1, 'Celular obrigatório'),
+  cpf: z.string().min(14, "CPF Inválido"),
+  phone: z.string().min(1, "Celular obrigatório"),
   zipCode: z.string().min(8, "CEP Inválido"),
   address: z.string().min(1, "Endereço é obrigatório"),
   number: z.string().min(1, "Número obrigatório"),
   complement: z.string().optional(),
   neighborhood: z.string().min(1, "Bairro é obrigatório"),
   city: z.string().min(1, "Cidade é obrigatório"),
-  state: z.string().min(1 , "Estado é obrigatório")
-})
+  state: z.string().min(1, "Estado é obrigatório"),
+});
 
 type FormValues = z.infer<typeof formSchema>;
 
-
 const Addresses = () => {
   const [selectAddress, setSelectAddress] = useState<string | null>(null);
+
+  const createShippingAddressMutation = useCreateShippingAddress();
 
   // use form
   const form = useForm<FormValues>({
@@ -61,14 +68,22 @@ const Addresses = () => {
       neighborhood: "",
       city: "",
       state: "",
-    }
-  })
+    },
+  });
 
   // submit do formulário
   async function onSubmit(values: FormValues) {
-    console.log(values)
-  }
+    try {
+      await createShippingAddressMutation.mutateAsync(values);
+      toast.success("Endereço criado com sucesso");
 
+      form.reset();
+      setSelectAddress(null);
+    } catch (error) {
+      toast.error("Erro ao salvar endereço, Tente novamente!");
+      console.log(error);
+    }
+  }
 
   return (
     <Card>
@@ -88,11 +103,14 @@ const Addresses = () => {
           </Card>
         </RadioGroup>
 
-        {selectAddress == "add_new" && 
-          <Form {...form} >
-            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 pt-6 border-t-2 border-t-gray-100">
-            <h4 className="font-semibold mb-3 text-1xl">Adicionar Novo</h4>
-              <div className="grid md:grid-cols-2 gap-4">
+        {selectAddress == "add_new" && (
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="mt-6 border-t-2 border-t-gray-100 pt-6"
+            >
+              <h4 className="text-1xl mb-3 font-semibold">Adicionar Novo</h4>
+              <div className="grid gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="email"
@@ -119,21 +137,19 @@ const Addresses = () => {
                   )}
                 />
 
-              <div className="grid grid-cols-2 gap-3">
-                <FormField
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField
                     control={form.control}
                     name="cpf"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <PatternFormat 
+                          <PatternFormat
                             format="###.###.###-##"
                             placeholder="CPF"
                             customInput={Input}
                             {...field}
-                          >
-
-                          </PatternFormat>
+                          ></PatternFormat>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -146,22 +162,20 @@ const Addresses = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <PatternFormat 
+                          <PatternFormat
                             format="(##) #####-####"
                             placeholder="Celular"
                             customInput={Input}
                             {...field}
-                          >
+                          ></PatternFormat>
 
-                          </PatternFormat>
-                          
                           {/* <Input placeholder="Celular" {...field} /> */}
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-              </div>
+                </div>
 
                 <FormField
                   control={form.control}
@@ -169,14 +183,12 @@ const Addresses = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <PatternFormat 
+                        <PatternFormat
                           format="#####-###"
                           placeholder="CEP"
                           customInput={Input}
                           {...field}
-                        >
-
-                        </PatternFormat>
+                        ></PatternFormat>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -226,8 +238,6 @@ const Addresses = () => {
                   />
                 </div>
 
-
-
                 <div className="grid grid-cols-2 gap-3">
                   <FormField
                     control={form.control}
@@ -270,12 +280,18 @@ const Addresses = () => {
                 />
               </div>
 
-              <Button type="submit" className="rounded-full mt-7 text-center w-full py-6">
-                Continuar com o Pagamento
+              <Button
+                type="submit"
+                className="mt-7 w-full rounded-full py-6 text-center"
+                disabled={createShippingAddressMutation.isPending}
+              >
+                {createShippingAddressMutation.isPending
+                  ? "Salvando..."
+                  : "Salvar endereço"}
               </Button>
             </form>
           </Form>
-        }
+        )}
       </CardContent>
     </Card>
   );

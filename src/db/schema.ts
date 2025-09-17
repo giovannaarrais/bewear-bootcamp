@@ -116,12 +116,13 @@ export const productVariantTable = pgTable("product_variant", {
 
 // ---------------------- ENDEREÇO -----------------------------
 // tabela para o ENDEREÇO
-export const shippingAddressTable = pgTable("shipping_adress", {
+export const shippingAddressTable = pgTable("shipping_address", {
     id: uuid().primaryKey().defaultRandom(),
     userId: text("user_id") //para ter um ENDEREÇO depende de um usuario
         .notNull()
         .references(() => userTable.id, { onDelete: "cascade" }), //cascade -> todos os registros que dependem dele também serão deletados
     recipientName: text().notNull(),
+    street: text().notNull(),
     number: text().notNull(),
     complement: text(),
     city: text().notNull(),
@@ -133,7 +134,7 @@ export const shippingAddressTable = pgTable("shipping_adress", {
     email: text().notNull(),
     cpfOrCnpj: text().notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("update_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // ------------------------ CARRINHO -----------------------------
