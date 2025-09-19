@@ -8,6 +8,7 @@ import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
 import z, { email, number } from "zod";
 
+import { getUserAddresses } from "@/actions/get-user-addresses";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,6 +32,7 @@ import {
   getCreateShippingAddressMutationKey,
   useCreateShippingAddress,
 } from "@/hooks/mutations/use-create-shipping-address";
+import { useGetUserAddresses } from "@/hooks/queries/use-user-addresses";
 
 const formSchema = z.object({
   email: z.email("E-mail inválido"),
@@ -71,6 +73,10 @@ const Addresses = () => {
     },
   });
 
+  const { data: addresses } = useGetUserAddresses();
+
+  console.log(addresses);
+
   // submit do formulário
   async function onSubmit(values: FormValues) {
     try {
@@ -91,7 +97,27 @@ const Addresses = () => {
         <CardTitle>Identification</CardTitle>
       </CardHeader>
 
-      <CardContent>
+
+      <CardContent className="space-y-2 flex flex-col">
+
+      {addresses?.map((address) => (
+          <RadioGroup value={address.id} id={address.id} key={address.id}>
+            <Card key={address.id}>
+              <CardContent>
+                <Label htmlFor={address.id} className="cursor-pointer">
+                  <RadioGroupItem value="address" id="address" />
+                  <div className="">
+                    <span>{address.street}, {address.number},
+                    </span>
+                    <span > {address.city}-{address.state}.</span>
+                    <p >{address.zipCode}</p>
+                  </div>
+                </Label>
+              </CardContent>
+            </Card>
+          </RadioGroup>
+      ))}
+
         <RadioGroup value={selectAddress} onValueChange={setSelectAddress}>
           <Card>
             <CardContent>
