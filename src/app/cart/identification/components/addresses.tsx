@@ -33,6 +33,7 @@ import {
   useCreateShippingAddress,
 } from "@/hooks/mutations/use-create-shipping-address";
 import { useGetUserAddresses } from "@/hooks/queries/use-user-addresses";
+import { shippingAddressTable } from "@/db/schema";
 
 const formSchema = z.object({
   email: z.email("E-mail inválido"),
@@ -50,9 +51,13 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const Addresses = () => {
-  const [selectAddress, setSelectAddress] = useState<string | null>(null);
+// sig que vai ser o resultado do select
+interface AddressesProps {
+  shippingAddresses: (typeof shippingAddressTable.$inferSelect)[]
+}
 
+const Addresses = ({ shippingAddresses }: AddressesProps) => {
+  const [selectAddress, setSelectAddress] = useState<string | null>(null);
   const createShippingAddressMutation = useCreateShippingAddress();
 
   // use form
@@ -73,7 +78,9 @@ const Addresses = () => {
     },
   });
 
-  const { data: addresses } = useGetUserAddresses();
+  const { data: addresses, isLoading } = useGetUserAddresses({
+    initialData: shippingAddresses,
+  });
 
   console.log(addresses);
 
@@ -94,14 +101,37 @@ const Addresses = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Identification</CardTitle>
+        <CardTitle>Identificação</CardTitle>
       </CardHeader>
 
 
       <CardContent className="space-y-2 flex flex-col">
+        {isLoading ? (
+          <div className="text-center py-4">
+            <p>Carregando endereços</p>
+          </div>
+        ) : (
+          <RadioGroup
+            value={selectAddress}
+            onValueChange={setSelectAddress}
+          >
+            {addresses?.length === 0 && (
+              <div className="text-center py-4">
+                <p className="text-muted-foreground">
+                  Você ainda não possui endereços cadastrados.
+                </p>
+              </div>
+            )}
+
+          </RadioGroup>
+        )}
 
       {addresses?.map((address) => (
-          <RadioGroup value={address.id} id={address.id} key={address.id}>
+          <RadioGroup 
+            value={address.id} 
+            id={address.id} 
+            key={address.id}
+          >
             <Card key={address.id}>
               <CardContent>
                 <Label htmlFor={address.id} className="cursor-pointer">
