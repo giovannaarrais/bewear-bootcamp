@@ -23,6 +23,7 @@ import { shippingAddressTable } from "@/db/schema";
 import {
   useCreateShippingAddress,
 } from "@/hooks/mutations/use-create-shipping-address";
+import { getUptadeCartShippingAddressMutationKey, useUptadeCartShippingAddress } from "@/hooks/mutations/use-uptade-cart-shipping-address";
 import { useGetUserAddresses } from "@/hooks/queries/use-user-addresses";
 
 const formSchema = z.object({
@@ -49,6 +50,10 @@ interface AddressesProps {
 const Addresses = ({ shippingAddresses }: AddressesProps) => {
   const [selectAddress, setSelectAddress] = useState<string | null>(null);
   const createShippingAddressMutation = useCreateShippingAddress();
+  const updateCartShippingAddressMutation = useUptadeCartShippingAddress()
+  const { data: addresses, isLoading } = useGetUserAddresses({
+    initialData: shippingAddresses,
+  });
 
   // use form
   const form = useForm<FormValues>({
@@ -68,23 +73,39 @@ const Addresses = ({ shippingAddresses }: AddressesProps) => {
     },
   });
 
-  const { data: addresses, isLoading } = useGetUserAddresses({
-    initialData: shippingAddresses,
-  });
 
-  console.log(addresses);
 
   // submit do formulário
   async function onSubmit(values: FormValues) {
     try {
-      await createShippingAddressMutation.mutateAsync(values);
+      const newAddress = await createShippingAddressMutation.mutateAsync(values);
       toast.success("Endereço criado com sucesso");
 
       form.reset();
-      setSelectAddress(null);
+      setSelectAddress(newAddress.id);
+
+      await updateCartShippingAddressMutation.mutateAsync({
+        shippingAddresseId: newAddress.id
+      })
+      toast.success("Endereço vinculado ao carrinho com sucesso");
+
     } catch (error) {
       toast.error("Erro ao salvar endereço, Tente novamente!");
       console.log(error);
+    }
+  }
+
+  const handleGoToPayment = async () => {
+    if (!selectAddress || selectAddress == 'add_new') return
+
+    try{
+      await updateCartShippingAddressMutation.mutateAsync({
+        shippingAddressId: selectAddress,
+      })
+      toast.success("Endereço selecionado para entrega!")
+    } catch (error) {
+      toast.error("Erro ao selecionar endereço. Tente Novamente")
+      console.log(error)
     }
   }
 
@@ -144,6 +165,19 @@ const Addresses = ({ shippingAddresses }: AddressesProps) => {
               </CardContent>
             </Card>
           </RadioGroup>
+        )}
+
+        {selectAddress && selectAddress !== "add_new" && (
+          <div className="mt-4">
+            <Button 
+              onClick={handleGoToPayment}
+              className="w-full"
+              disabled={updateCartShippingAddressMutation.isPending}
+            >
+              {updateCartShippingAddressMutation.isPending ? "Processando.." : "Ir para o pagamento"}
+
+            </Button>
+          </div>
         )}
 
         {selectAddress == "add_new" && (
@@ -326,9 +360,11 @@ const Addresses = ({ shippingAddresses }: AddressesProps) => {
               <Button
                 type="submit"
                 className="mt-7 w-full rounded-full py-6 text-center"
-                disabled={createShippingAddressMutation.isPending}
+                disabled={createShippingAddressMutation.isPending || 
+                  updateCartShippingAddressMutation.isPending}
               >
-                {createShippingAddressMutation.isPending
+                {createShippingAddressMutation.isPending || 
+                  updateCartShippingAddressMutation.isPending
                   ? "Salvando..."
                   : "Salvar endereço"}
               </Button>
