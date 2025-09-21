@@ -33,6 +33,9 @@ const IdentificatonPage = async () => {
     redirect("/");
   }
 
+
+  // Tecnica para evitar refresh demorado de pagina
+  // envia os dados do server component para o component addresses diretamente
   const shippingAddresses = await db.query.shippingAddressTable.findMany({
     where: eq(shippingAddressTable.userId, session.user.id),
   })
