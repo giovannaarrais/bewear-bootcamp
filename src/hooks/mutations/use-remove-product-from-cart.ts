@@ -16,7 +16,7 @@ export const getRemoveProductFromCartMutationKey = (cartItemId: string) =>
         mutationKey: getRemoveProductFromCartMutationKey(cartItemId),
         mutationFn: () => removeProductFromCart({ cartItemId }),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: getUseCartQueryKey });
+            queryClient.invalidateQueries({ queryKey: getUseCartQueryKey() });
         },
     });
 };

@@ -1,12 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
 import z from "zod";
 
+import { getCart } from "@/actions/get-cart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -20,10 +21,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { shippingAddressTable } from "@/db/schema";
+import { useCreateShippingAddress } from "@/hooks/mutations/use-create-shipping-address";
 import {
-  useCreateShippingAddress,
-} from "@/hooks/mutations/use-create-shipping-address";
-import { getUptadeCartShippingAddressMutationKey, useUptadeCartShippingAddress } from "@/hooks/mutations/use-uptade-cart-shipping-address";
+  useUpdateCartShippingAddress,
+} from "@/hooks/mutations/use-update-cart-shipping-address";
+import { useCart } from "@/hooks/queries/use-cart";
 import { useGetUserAddresses } from "@/hooks/queries/use-user-addresses";
 
 const formSchema = z.object({
@@ -45,12 +47,18 @@ type FormValues = z.infer<typeof formSchema>;
 // sig que vai ser o resultado do select
 interface AddressesProps {
   shippingAddresses: (typeof shippingAddressTable.$inferSelect)[];
+  defaultShippingAddressId: Awaited<ReturnType<typeof getCart>>; // logica para evitar carregamento demorado
 }
 
-const Addresses = ({ shippingAddresses }: AddressesProps) => {
-  const [selectAddress, setSelectAddress] = useState<string | null>(null);
+const Addresses = ({
+  shippingAddresses,
+  defaultShippingAddressId,
+}: AddressesProps) => {
+  const [selectAddress, setSelectedAddress] = useState<string | null>(
+    defaultShippingAddressId || null,
+  );
   const createShippingAddressMutation = useCreateShippingAddress();
-  const updateCartShippingAddressMutation = useUptadeCartShippingAddress()
+  const updateCartShippingAddressMutation = useUpdateCartShippingAddress();
   const { data: addresses, isLoading } = useGetUserAddresses({
     initialData: shippingAddresses,
   });
@@ -73,22 +81,20 @@ const Addresses = ({ shippingAddresses }: AddressesProps) => {
     },
   });
 
-
-
   // submit do formulário
   async function onSubmit(values: FormValues) {
     try {
-      const newAddress = await createShippingAddressMutation.mutateAsync(values);
+      const newAddress =
+        await createShippingAddressMutation.mutateAsync(values);
       toast.success("Endereço criado com sucesso");
 
       form.reset();
-      setSelectAddress(newAddress.id);
+      setSelectedAddress(newAddress.id);
 
       await updateCartShippingAddressMutation.mutateAsync({
-        shippingAddresseId: newAddress.id
-      })
+        shippingAddressId: newAddress.id,
+      });
       toast.success("Endereço vinculado ao carrinho com sucesso");
-
     } catch (error) {
       toast.error("Erro ao salvar endereço, Tente novamente!");
       console.log(error);
@@ -96,18 +102,18 @@ const Addresses = ({ shippingAddresses }: AddressesProps) => {
   }
 
   const handleGoToPayment = async () => {
-    if (!selectAddress || selectAddress == 'add_new') return
+    if (!selectAddress || selectAddress == "add_new") return;
 
-    try{
+    try {
       await updateCartShippingAddressMutation.mutateAsync({
         shippingAddressId: selectAddress,
-      })
-      toast.success("Endereço selecionado para entrega!")
+      });
+      toast.success("Endereço selecionado para entrega!");
     } catch (error) {
-      toast.error("Erro ao selecionar endereço. Tente Novamente")
-      console.log(error)
+      toast.error("Erro ao selecionar endereço. Tente Novamente");
+      console.log(error);
     }
-  }
+  };
 
   return (
     <Card>
@@ -121,7 +127,7 @@ const Addresses = ({ shippingAddresses }: AddressesProps) => {
             <p>Carregando endereços</p>
           </div>
         ) : (
-          <RadioGroup value={selectAddress} onValueChange={setSelectAddress}>
+          <RadioGroup value={selectAddress} onValueChange={setSelectedAddress}>
             {addresses?.length === 0 && (
               <div className="py-4 text-center">
                 <p className="text-muted-foreground">
@@ -169,13 +175,14 @@ const Addresses = ({ shippingAddresses }: AddressesProps) => {
 
         {selectAddress && selectAddress !== "add_new" && (
           <div className="mt-4">
-            <Button 
+            <Button
               onClick={handleGoToPayment}
               className="w-full"
               disabled={updateCartShippingAddressMutation.isPending}
             >
-              {updateCartShippingAddressMutation.isPending ? "Processando.." : "Ir para o pagamento"}
-
+              {updateCartShippingAddressMutation.isPending
+                ? "Processando.."
+                : "Ir para o pagamento"}
             </Button>
           </div>
         )}
@@ -360,11 +367,13 @@ const Addresses = ({ shippingAddresses }: AddressesProps) => {
               <Button
                 type="submit"
                 className="mt-7 w-full rounded-full py-6 text-center"
-                disabled={createShippingAddressMutation.isPending || 
-                  updateCartShippingAddressMutation.isPending}
-              >
-                {createShippingAddressMutation.isPending || 
+                disabled={
+                  createShippingAddressMutation.isPending ||
                   updateCartShippingAddressMutation.isPending
+                }
+              >
+                {createShippingAddressMutation.isPending ||
+                updateCartShippingAddressMutation.isPending
                   ? "Salvando..."
                   : "Salvar endereço"}
               </Button>

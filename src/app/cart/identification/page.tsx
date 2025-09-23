@@ -20,11 +20,20 @@ const IdentificatonPage = async () => {
   }
 
   const cart = await db.query.cartTable.findFirst({
-    where: eq(cartTable.userId, session?.user.id),
-    with: {
-      items: true,
-    },
-  });
+    where: (cart, {eq}) => eq(cart.userId, session.user.id),
+    with:{
+      shippingAddress: true, // trazer informacoes do endereço do carrinho
+      items: {
+          with: {
+              productVariant:{
+                  with:{
+                      product: true,
+                  }
+              }
+          }
+      }
+    }
+  })
 
 
   // verifica se user possui carrinho ou itens no carrinho
@@ -32,7 +41,6 @@ const IdentificatonPage = async () => {
   if (!cart || cart.items.length === 0) {
     redirect("/");
   }
-
 
   // Tecnica para evitar refresh demorado de pagina
   // envia os dados do server component para o component addresses diretamente
@@ -45,7 +53,10 @@ const IdentificatonPage = async () => {
       <Header />
 
       <div className="px-5">
-        <Addresses shippingAddresses={shippingAddresses}/>
+        <Addresses 
+          shippingAddresses={shippingAddresses} 
+          defaultShippingAddressId={cart.shippingAddress?.id || null}
+        />
       </div>
 
     </>
