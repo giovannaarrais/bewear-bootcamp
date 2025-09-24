@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import {
     boolean,
     integer,
+    pgEnum,
     pgTable,
     primaryKey,
     text,
@@ -163,7 +164,53 @@ export const cartItemTable = pgTable("cart_item", {
     createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// ------------------------ Relacionamentos ----------------------
+
+// ------------------------ TABELA DE PEDIDO DO USUÁRIO -----------------------------
+// tipos de status feito com enum
+export const orderStatus = pgEnum("order_status", ["pending", "paid", "canceled"]);
+
+export const orderTable = pgTable("order", {
+    id: uuid("order_id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+        .notNull()
+        .references(() => userTable.id, { onDelete: "cascade" }),
+    shippingAddressId: uuid("shipping_address_id")
+        .notNull()
+        .references(() => shippingAddressTable.id, { onDelete: "set null" }), 
+    recipientName: text().notNull(),
+    street: text().notNull(),
+    number: text().notNull(),
+    complement: text(),
+    city: text().notNull(),
+    state: text().notNull(),
+    neighborhood: text().notNull(),
+    zipCode: text().notNull(), //cep
+    country: text().notNull(),
+    phone: text().notNull(),
+    email: text().notNull(),
+    cpfOrCnpj: text().notNull(),
+    totalPriceInCents: integer("total_price_in_cents").notNull(),
+    status: orderStatus().notNull().default("pending"), // o padrao do status do pedido é pendente
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+export const orderItemTable = pgTable("order_item", {
+    id: uuid("order_item_id").notNull().primaryKey(),
+    orderId: uuid("order_id")
+        .notNull()
+        .references(() => orderTable.id, { onDelete: "cascade"}),
+    productVariantId: uuid("product_variant_id")
+        .notNull()
+        .references(() => productVariantTable.id, { onDelete: "restrict"}),
+    // restrict -> nao permite deletar um produto que possui um pedido vinculado a ele
+    quantity: integer("quantity").notNull(),
+    priceInCents: integer("price_in_cents").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+
+
+// --------------------------------- RELACIONAMENTOS -------------------------------
 
 // um usuario pode ter varios endereços e apenas um carrinho
 export const userRelations = relations(userTable, ({ many, one }) => ({
@@ -172,6 +219,8 @@ export const userRelations = relations(userTable, ({ many, one }) => ({
         fields: [userTable.id],
         references: [cartTable.userId]
     }),
+    // um usuario pode possuir varios pedidos
+    orders: many(orderTable)
 }));
 
 // uma categoria pode ter varios produtos
@@ -190,29 +239,30 @@ export const productRelations = relations(productTable, ({ one, many }) => ({
 }));
 
 // o productId da variante se referencia ao id da tabela de produtos
-export const productVariantRelations = relations(
-    productVariantTable,
-    ({ one }) => ({
-        product: one(productTable, {
+export const productVariantRelations = relations( productVariantTable, ({ one, many }) => ({
+    product: one(productTable, {
         fields: [productVariantTable.productId],
         references: [productTable.id],
-        }),
     }),
-);
+    cartItems: many(cartItemTable), // uma variante de produto pode conter varios itens de carrinho
+    orderItems: many(orderItemTable), // e varios itens de pedido
+
+}));
 
 // o userId da tabela de endereço se referencia ao id da tabela de usuario
-export const shippingAddressRelations = relations(shippingAddressTable,
-    ({ one }) => ({
-        user: one(userTable, {
+export const shippingAddressRelations = relations(shippingAddressTable, ({ one, many }) => ({
+    user: one(userTable, {
         fields: [shippingAddressTable.userId],
         references: [userTable.id],
-        }),
-        // um endereço sempre vai pertencer a um carrinho
-        cart: one(cartTable, {
-            fields: [shippingAddressTable.id],
-            references: [cartTable.shippingAddressId]
-        })
     }),
+        // um endereço sempre vai pertencer a um carrinho
+    cart: one(cartTable, {
+        fields: [shippingAddressTable.id],
+        references: [cartTable.shippingAddressId]
+    }),
+    // um endereço pode ter varios pedidos
+    orders: many(orderTable)
+}),
 );
 
 // carrinho vai ter um usuario e um endereço
@@ -242,3 +292,30 @@ export const cartItemRelations = relations(cartItemTable, ({ one }) => ({
         references: [productVariantTable.id],
     })
 }));
+
+
+// relcionamentos dos pedidos
+export const orderRelations = relations(orderTable, ({ one, many }) => ({
+    user: one(userTable, {
+        fields: [orderTable.userId],
+        references: [userTable.id]
+    }),
+    shippingAddress: one(shippingAddressTable, {
+        fields: [orderTable.shippingAddressId],
+        references: [shippingAddressTable.id]
+    }) ,
+    // um pedido vai ter varios itens de pedido
+    items: many(orderItemTable)
+}))
+
+// relacionamento dos itens do pedido
+export const orderItemRelations = relations(orderItemTable, ({ one }) => ({
+    order: one(orderTable, {
+        fields: [orderItemTable.orderId],
+        references: [orderTable.id]
+    }),
+    productVariant: one(productVariantTable, {
+        fields: [orderItemTable.productVariantId],
+        references: [productVariantTable.id]
+    })
+}))

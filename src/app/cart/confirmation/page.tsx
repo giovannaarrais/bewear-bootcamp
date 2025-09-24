@@ -72,7 +72,10 @@ const ConfirmationPage = async() => {
                             </CardContent>
                         </Card>
                 
-                        <Button className='mt-3 w-full rounded-full' size="lg">
+                        <Button 
+                            className='mt-3 w-full rounded-full' 
+                            size="lg"
+                        >
                             Finalizar Compra
                         </Button>
                     </CardContent>
@@ -89,7 +92,7 @@ const ConfirmationPage = async() => {
                         priceInCents: item.productVariant.priceInCents,
                         imageUrl: item.productVariant.imageUrl[0]
                     }))}
-                    />
+                />
             </div>
 
             <Footer />
