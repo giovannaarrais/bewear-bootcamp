@@ -1,7 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ import {
 } from "@/hooks/mutations/use-update-cart-shipping-address";
 import { useCart } from "@/hooks/queries/use-cart";
 import { useGetUserAddresses } from "@/hooks/queries/use-user-addresses";
+import { formatAddress } from "../../helpers/address";
 
 const formSchema = z.object({
   email: z.email("E-mail inválido"),
@@ -54,6 +56,8 @@ const Addresses = ({
   shippingAddresses,
   defaultShippingAddressId,
 }: AddressesProps) => {
+  
+  const router = useRouter();
 
   const [selectAddress, setSelectedAddress] = useState<string | null>(
     defaultShippingAddressId || null,
@@ -65,6 +69,7 @@ const Addresses = ({
   const { data: addresses, isLoading } = useGetUserAddresses({
     initialData: shippingAddresses,
   });
+
 
   // use form
   const form = useForm<FormValues>({
@@ -114,6 +119,9 @@ const Addresses = ({
         shippingAddressId: selectAddress,
       });
       toast.success("Endereço selecionado para entrega!", {position: 'top-center'});
+
+      router.push('/cart/confirmation')
+
     } catch (error) {
       toast.error("Erro ao selecionar endereço. Tente Novamente");
       console.log(error);
@@ -144,22 +152,11 @@ const Addresses = ({
             {addresses?.map((address) => (
               <Card key={address.id}>
                 <CardContent>
-                  <div className="flex items-start space-x-2">
+                  <div className="flex items-center space-x-2">
                     <RadioGroupItem value={address.id} id={address.id} />
                     <div className="flex-1">
                       <Label htmlFor={address.id} className="cursor-pointer">
-                        <div>
-                          <div className="text-sm">
-                            <span>
-                              {address.street}, {address.number},
-                            </span>
-                            <span>
-                              {" "}
-                              {address.city}-{address.state}.
-                            </span>
-                            <p>{address.zipCode}</p>
-                          </div>
-                        </div>
+                        <div>{formatAddress(address)}</div>
                       </Label>
                     </div>
                   </div>

@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import React from "react";
 
+import Footer from "@/components/common/footer";
 import Header from "@/components/common/header";
 import { db } from "@/db";
 import { cartItemTable, cartTable, shippingAddressTable } from "@/db/schema";
@@ -10,7 +11,6 @@ import { auth } from "@/lib/auth";
 
 import CartSummary from "../components/cart-summary";
 import Addresses from "./components/addresses";
-import Footer from "@/components/common/footer";
 
 const IdentificatonPage = async () => {
   const session = await auth.api.getSession({
