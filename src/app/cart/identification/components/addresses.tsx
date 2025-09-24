@@ -54,11 +54,14 @@ const Addresses = ({
   shippingAddresses,
   defaultShippingAddressId,
 }: AddressesProps) => {
+
   const [selectAddress, setSelectedAddress] = useState<string | null>(
     defaultShippingAddressId || null,
   );
+
   const createShippingAddressMutation = useCreateShippingAddress();
   const updateCartShippingAddressMutation = useUpdateCartShippingAddress();
+
   const { data: addresses, isLoading } = useGetUserAddresses({
     initialData: shippingAddresses,
   });
@@ -94,12 +97,14 @@ const Addresses = ({
       await updateCartShippingAddressMutation.mutateAsync({
         shippingAddressId: newAddress.id,
       });
-      toast.success("Endereço vinculado ao carrinho com sucesso");
+      toast.success("Endereço vinculado ao carrinho com sucesso", {position: 'top-center'});
+
     } catch (error) {
       toast.error("Erro ao salvar endereço, Tente novamente!");
       console.log(error);
     }
   }
+
 
   const handleGoToPayment = async () => {
     if (!selectAddress || selectAddress == "add_new") return;
@@ -108,7 +113,7 @@ const Addresses = ({
       await updateCartShippingAddressMutation.mutateAsync({
         shippingAddressId: selectAddress,
       });
-      toast.success("Endereço selecionado para entrega!");
+      toast.success("Endereço selecionado para entrega!", {position: 'top-center'});
     } catch (error) {
       toast.error("Erro ao selecionar endereço. Tente Novamente");
       console.log(error);
