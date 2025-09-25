@@ -171,7 +171,7 @@ export const orderStatus = pgEnum("order_status", ["pending", "paid", "canceled"
 
 export const orderTable = pgTable("order", {
     id: uuid("order_id").primaryKey().defaultRandom(),
-    userId: uuid("user_id")
+    userId: text("user_id")
         .notNull()
         .references(() => userTable.id, { onDelete: "cascade" }),
     shippingAddressId: uuid("shipping_address_id")
@@ -195,7 +195,7 @@ export const orderTable = pgTable("order", {
 })
 
 export const orderItemTable = pgTable("order_item", {
-    id: uuid("order_item_id").notNull().primaryKey(),
+    id: uuid().primaryKey().defaultRandom(),
     orderId: uuid("order_id")
         .notNull()
         .references(() => orderTable.id, { onDelete: "cascade"}),

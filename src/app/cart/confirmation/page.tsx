@@ -5,13 +5,15 @@ import React from 'react';
 
 import Footer from '@/components/common/footer';
 import Header from '@/components/common/header';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { db } from '@/db';
 import { shippingAddressTable } from '@/db/schema';
 import { auth } from '@/lib/auth';
+
 import CartSummary from '../components/cart-summary';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatAddress } from '../helpers/address';
-import { Button } from '@/components/ui/button';
+import FinishOrderButton from './components/finish-order-button';
 
 const ConfirmationPage = async() => {
 
@@ -49,7 +51,7 @@ const ConfirmationPage = async() => {
         (acc, item) => acc + item.productVariant.priceInCents * item.quantity, 
         0 // ← VALOR INICIAL AQUI
     );
- 
+
     if (!cart.shippingAddress){
         redirect("cart/identification")
     }
@@ -72,12 +74,8 @@ const ConfirmationPage = async() => {
                             </CardContent>
                         </Card>
                 
-                        <Button 
-                            className='mt-3 w-full rounded-full' 
-                            size="lg"
-                        >
-                            Finalizar Compra
-                        </Button>
+                        <FinishOrderButton />
+
                     </CardContent>
                 </Card>
 
