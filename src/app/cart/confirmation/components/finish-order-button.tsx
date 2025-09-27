@@ -15,18 +15,24 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog"
 import { useFinishOrder } from '@/hooks/mutations/use-finish-order';
+import Link from 'next/link';
 
 const FinishOrderButton = () => {
 
-    const [successDialogIsOpen, setSuccessDialogIsOpen ] = useState(true)
+    const [successDialogIsOpen, setSuccessDialogIsOpen ] = useState(false)
     const finishOrderMutation = useFinishOrder();
+
+    function handleFinishOrder() {
+        setSuccessDialogIsOpen(true)
+        finishOrderMutation.mutate()
+    }
 
     return (
         <>
             <Button 
                 className='mt-3 w-full rounded-full' 
                 size="lg"
-                onClick={() => finishOrderMutation.mutate()}
+                onClick={handleFinishOrder}
                 disabled={finishOrderMutation.isPending}
             >
                 {finishOrderMutation.isPending && (
@@ -64,8 +70,11 @@ const FinishOrderButton = () => {
                         <Button 
                         variant='outline'
                         className='mt-3 w-full rounded-full'
-                        size='lg'>
-                            Página Inicial
+                        size='lg'
+                        asChild>
+                            <Link href={"/"}>
+                                Página Inicial
+                            </Link>
                         </Button>
                     </DialogFooter>
                 </DialogContent>
