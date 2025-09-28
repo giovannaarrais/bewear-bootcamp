@@ -1,12 +1,12 @@
 "use server"
 
 import { eq } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 
 import { db } from '@/db';
 import { cartItemTable, cartTable, orderItemTable, orderTable } from '@/db/schema';
 import { auth } from '@/lib/auth';
-import { revalidatePath } from 'next/cache';
 
 export const finishOrder = async () => {
     
@@ -39,6 +39,8 @@ export const finishOrder = async () => {
         acc + item.productVariant.priceInCents * item.quantity, 0,
     );
 
+    let orderId: string | undefined;
+
     // a etapa abaixo so acontece se as etapas acima forem verdadeiras atraves do transaction
     await db.transaction(async (tx) => {
         if (!cart?.shippingAddress){
@@ -69,6 +71,8 @@ export const finishOrder = async () => {
         if(!order){
             throw new Error("Failed to create order")
         }
+
+        orderId = order.id;
     
         const orderItemsPayload: Array<typeof orderItemTable.$inferInsert> = 
             cart.items.map((item) => ({
@@ -86,7 +90,10 @@ export const finishOrder = async () => {
 
         // deletar o item do carrinho
         await tx.delete(cartItemTable).where(eq(cartItemTable.cartId, cart.id))
-        
     })
 
+    if (!orderId){
+        throw new Error("Failed to create order")
+    }
+    return { orderId };
 }
