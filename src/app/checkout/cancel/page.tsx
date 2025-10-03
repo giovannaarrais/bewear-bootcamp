@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CheckoutCancel = () => {
+const CheckoutCancelPage = () => {
     return (
         <div>
         <h1>Checkout cancel</h1>
@@ -8,4 +8,4 @@ const CheckoutCancel = () => {
     );
 };
 
-export default CheckoutCancel;
+export default CheckoutCancelPage;
