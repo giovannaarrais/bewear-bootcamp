@@ -1,13 +1,13 @@
+import { desc } from "drizzle-orm";
 import Image from "next/image";
 
 import CategorySelector from "@/components/common/category-selector";
+import Footer from "@/components/common/footer";
 import Header from "@/components/common/header";
+import Parceiros from "@/components/common/parceiros";
 import ProductsList from "@/components/common/products-list";
 import { db } from "@/db";
-import { desc } from "drizzle-orm";
 import { productTable } from "@/db/schema";
-import Footer from "@/components/common/footer";
-import Parceiros from "@/components/common/parceiros";
 
 export default async function Home() {
   // capturar produtos do banco e suas variantes e categorias
