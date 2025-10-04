@@ -6,14 +6,11 @@ import React from "react";
 import Footer from "@/components/common/footer";
 import Header from "@/components/common/header";
 import ProductsList from "@/components/common/products-list";
-import { Button } from "@/components/ui/button";
 import { db } from "@/db";
-import {  cartItemTable, cartTable, productTable, productVariantTable } from "@/db/schema";
+import {   productTable, productVariantTable } from "@/db/schema";
 import { FormatCentsToBRL } from "@/helpers/money";
 
-import AddToCartButton from "./components/add-to-cart-button";
 import ProductActions from "./components/product-actions";
-import QuantitySelector from "./components/quantity-selector";
 import VariantSelector from "./components/variant-selector";
 
 interface ProductVariantPageProps {

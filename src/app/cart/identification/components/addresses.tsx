@@ -49,7 +49,7 @@ type FormValues = z.infer<typeof formSchema>;
 // sig que vai ser o resultado do select
 interface AddressesProps {
   shippingAddresses: (typeof shippingAddressTable.$inferSelect)[];
-  defaultShippingAddressId: Awaited<ReturnType<typeof getCart>>; // logica para evitar carregamento demorado
+  defaultShippingAddressId: string | null; // logica para evitar carregamento demorado
 }
 
 const Addresses = ({
