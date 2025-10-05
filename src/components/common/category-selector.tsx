@@ -3,8 +3,6 @@ import React from 'react';
 
 import { categoryTable } from '@/db/schema';
 
-import { Button } from '../ui/button';
-
 interface CategorySelectorProps {
     categories: (typeof categoryTable.$inferSelect)[];
 }

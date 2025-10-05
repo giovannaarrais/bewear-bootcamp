@@ -35,7 +35,7 @@ const AddToCartButton = ({ productVariantId, quantity }: AddProductToCartProps) 
     return (
         <Button 
             variant="outline" 
-            className="rounded-3xl py-6 font-semibold"
+            className="rounded-3xl sm:py-6 py-4 font-semibold flex-1"
             disabled={isPending}
             onClick={() => mutate()}
         > 

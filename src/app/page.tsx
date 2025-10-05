@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import CategorySelector from "@/components/common/category-selector";
+import CategorySelectorDesktop from "@/components/common/category-selector-desktop";
 import Footer from "@/components/common/footer";
 import Header from "@/components/common/header";
 import Parceiros from "@/components/common/parceiros";
@@ -20,21 +21,25 @@ export default async function Home() {
     <>
       <Header />
 
+      <div className="p-5 pt-0 sm:block hidden">
+          <CategorySelectorDesktop categories={categories} />
+        </div>
+
       <div className="space-y-6">
         <Image
-          src="/banner-1.png"
+          src="/destaque-dk.png"
           alt="Leve uma vida com estilo"
           width={0}
           height={0}
           sizes="100vw"
-          className="h-auto w-full px-5"
+          className="h-auto  w-full px-5"
         />
 
         <Parceiros />
 
         <ProductsList products={products} title="Mais vendidos" />
 
-        <div className="p-5">
+        <div className="p-5 sm:hidden block">
           <CategorySelector categories={categories} />
         </div>
 
@@ -44,8 +49,41 @@ export default async function Home() {
           width={0}
           height={0}
           sizes="100vw"
-          className="h-auto w-full px-5"
+          className="h-auto w-full px-5 sm:hidden block"
         />
+
+        <div className="sm:block hidden">
+          <div className="flex flex-col md:flex-row gap-4 max-w-7xl mx-auto p-4">
+            {/* Coluna Esquerda */}
+            <div className="flex flex-col gap-4 flex-1">
+              <Image
+                src="/destaque-mini-dk.png"
+                alt="Nike Therma FIT Headed"
+                width={513}
+                height={307}
+                className="w-full h-auto rounded-lg object-cover shadow-sm"
+              />
+              <Image
+                src="/destaque-mini-dk2.png"
+                alt="Nike Therma FIT Headed"
+                width={513}
+                height={307}
+                className="w-full h-auto rounded-lg object-cover shadow-sm"
+              />
+            </div>
+
+            {/* Coluna Direita */}
+            <div className="flex-2 flex">
+              <Image
+                src="/destaque-minibottom-dk.png"
+                alt="Nike Therma FIT Headed"
+                width={1026}
+                height={614}
+                className="w-full h-full rounded-lg object-cover shadow-sm"
+              />
+            </div>
+          </div>
+        </div>
 
         {/* EXIBICAO DA LISTA DE PRODUTOS MAIS RECENTES */}
         <ProductsList products={newlyCreatedProducts} title="Novos Produtos" />
