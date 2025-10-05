@@ -49,51 +49,55 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
         <div>
             <Header />
             
-            <div className="flex flex-col space-y-6 px-5">
-                <Image
-                    src={productVariant.imageUrl[0] || ''}
-                    alt={productVariant.name}
-                    sizes="100vw"
-                    width={0}
-                    height={0}
-                    className="h-auto w-full"
-                />
-            </div>
-
-            {/* VARIANTES */}
-            <div className="px-5">
-                <VariantSelector 
-                    variants={productVariant.product.variants} 
-                    selectedVariantSlug={productVariant.slug}
-                    //selectedVariantSlug -> identifica qual a variante selecionada
-                />
-            </div>
-
-            <div className="px-5 space-y-7 mb-6">
-                {/* DESCRICAO */}   
-                <div className="desc">
-                    <h3 className="text-lg font-semibold">
-                        {productVariant.product.name}
-                    </h3>
-                    <h2 className="text-muted-foreground text-sm">
-                        {productVariant.name}
-                    </h2>
-                    <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-semibold">
-                            {FormatCentsToBRL(productVariant.priceInCents)}
-                        </h3>
-                    
-                    </div>
+            <div className="flex md:flex-row flex-col mb-8 px-5">
+                <div className="flex-1">
+                    <Image
+                        src={productVariant.imageUrl[0] || ''}
+                        alt={productVariant.name}
+                        sizes="100vw"
+                        width={0}
+                        height={0}
+                        className="h-auto w-full rounded-2xl"
+                    />
                 </div>
 
-                
-                {/* ACOES */}
-                <ProductActions productVariantId={productVariant.id}/>
+                <div className="flex-1">
+                    <div className="md:px-5 space-y-7 mb-6">
+                        {/* DESCRICAO */}   
+                        <div className="desc">
+                            <h3 className="text-lg font-semibold">
+                                {productVariant.product.name}
+                            </h3>
+                            <h2 className="text-muted-foreground text-sm">
+                                {productVariant.name}
+                            </h2>
+                            <div className="flex justify-between items-center">
+                                <h3 className="text-lg font-semibold">
+                                    {FormatCentsToBRL(productVariant.priceInCents)}
+                                </h3>
+                            
+                            </div>
 
-                <div className="">
-                    <p className="text-sm">
-                        {productVariant.product.description}
-                    </p>
+                            {/* VARIANTES */}
+                            <div className="">
+                                <VariantSelector 
+                                    variants={productVariant.product.variants} 
+                                    selectedVariantSlug={productVariant.slug}
+                                    //selectedVariantSlug -> identifica qual a variante selecionada
+                                />
+                            </div>
+                        </div>
+
+                        <div className="">
+                            <p className="text-sm">
+                                {productVariant.product.description}
+                            </p>
+                        </div>
+                        
+                        {/* ACOES */}
+                        <ProductActions productVariantId={productVariant.id}/>
+
+                    </div>
                 </div>
             </div>
 

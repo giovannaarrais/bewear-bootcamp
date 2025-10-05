@@ -39,12 +39,12 @@ const ProductActions = ({productVariantId}: ProductActionsProps) => {
             </div>
 
             {/* ACOES */}
-            <div className="space-y-3 flex flex-col">
+            <div className="space-y-3 flex sm:flex-row flex-col gap-3">
                 <AddToCartButton
                     productVariantId={productVariantId}
                     quantity={quantity}
                 />
-                <Button variant="default" className="rounded-3xl py-6 font-semibold">
+                <Button variant="default" className="rounded-3xl sm:py-6 py-4 font-semibold flex-1">
                     Comprar Agora
                 </Button>
             </div>
