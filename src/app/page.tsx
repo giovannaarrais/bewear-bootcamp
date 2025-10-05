@@ -1,4 +1,3 @@
-import { desc } from "drizzle-orm";
 import Image from "next/image";
 
 import CategorySelector from "@/components/common/category-selector";
@@ -6,28 +5,16 @@ import Footer from "@/components/common/footer";
 import Header from "@/components/common/header";
 import Parceiros from "@/components/common/parceiros";
 import ProductsList from "@/components/common/products-list";
-import { db } from "@/db";
-import { productTable } from "@/db/schema";
+import { getCategories } from "@/data/categories/get";
+import { getNewlyCreatedProducts, getProducts } from "@/data/products/get";
 
 export default async function Home() {
-  // capturar produtos do banco e suas variantes e categorias
-  const products = await db.query.productTable.findMany({
-    with: {
-      variants: true,
-      category: true,
-    },
-  });
-
-  // ordernacao decrescente das datas de criacao da table de produtos
-  const newlyCreatedProducts = await db.query.productTable.findMany({
-    orderBy: [desc(productTable.createdAt)],
-    limit: 4,
-    with: {
-      variants: true
-    }
-  })
-
-  const categories = await db.query.categoryTable.findMany({})
+  // como uma query nao depende da outra 
+  const [products, newlyCreatedProducts, categories] = await Promise.all([
+    getProducts(), // capturar produtos do banco e suas variantes e categorias
+    getNewlyCreatedProducts(), // ordernacao decrescente das datas de criacao da table de produtos
+    getCategories(),
+  ])
 
   return (
     <>
@@ -48,7 +35,7 @@ export default async function Home() {
         <ProductsList products={products} title="Mais vendidos" />
 
         <div className="p-5">
-          <CategorySelector categories={categories}/>
+          <CategorySelector categories={categories} />
         </div>
 
         <Image
@@ -60,7 +47,7 @@ export default async function Home() {
           className="h-auto w-full px-5"
         />
 
-          {/* EXIBICAO DA LISTA DE PRODUTOS MAIS RECENTES */}
+        {/* EXIBICAO DA LISTA DE PRODUTOS MAIS RECENTES */}
         <ProductsList products={newlyCreatedProducts} title="Novos Produtos" />
       </div>
 
