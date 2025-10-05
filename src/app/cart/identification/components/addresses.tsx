@@ -1,6 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -8,9 +10,15 @@ import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
 import z from "zod";
 
-import { getCart } from "@/actions/get-cart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -23,11 +31,13 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { shippingAddressTable } from "@/db/schema";
 import { useCreateShippingAddress } from "@/hooks/mutations/use-create-shipping-address";
+import { useRemoveAddress } from "@/hooks/mutations/use-remove-address";
+import { useUpdateCartShippingAddress } from "@/hooks/mutations/use-update-cart-shipping-address";
 import {
-  useUpdateCartShippingAddress,
-} from "@/hooks/mutations/use-update-cart-shipping-address";
-import { useCart } from "@/hooks/queries/use-cart";
-import { useGetUserAddresses } from "@/hooks/queries/use-user-addresses";
+  getUserAddressesQueryKey,
+  useGetUserAddresses,
+} from "@/hooks/queries/use-user-addresses";
+
 import { formatAddress } from "../../helpers/address";
 
 const formSchema = z.object({
@@ -56,20 +66,42 @@ const Addresses = ({
   shippingAddresses,
   defaultShippingAddressId,
 }: AddressesProps) => {
-  
   const router = useRouter();
 
-  const [selectAddress, setSelectedAddress] = useState<string | null>(
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(
     defaultShippingAddressId || null,
   );
 
+  const removeAddressMutation = useRemoveAddress();
   const createShippingAddressMutation = useCreateShippingAddress();
   const updateCartShippingAddressMutation = useUpdateCartShippingAddress();
+
+  const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   const { data: addresses, isLoading } = useGetUserAddresses({
     initialData: shippingAddresses,
   });
 
+  const queryClient = useQueryClient();
+
+  // remover endereço
+  const handleDeleteAddressClick = () => {
+    if (!addressToDelete) return;
+
+    removeAddressMutation.mutate(addressToDelete, {
+      onSuccess: () => {
+        toast.success("Endereço removido com sucesso");
+        setConfirmDialogOpen(false);
+        setAddressToDelete(null);
+        queryClient.invalidateQueries({ queryKey: getUserAddressesQueryKey() });
+      },
+      onError: (error) => {
+        toast.error("Erro ao remover endereço");
+        console.log("erro ao excluir endereço", error);
+      },
+    });
+  };
 
   // use form
   const form = useForm<FormValues>({
@@ -102,26 +134,27 @@ const Addresses = ({
       await updateCartShippingAddressMutation.mutateAsync({
         shippingAddressId: newAddress.id,
       });
-      toast.success("Endereço vinculado ao carrinho com sucesso", {position: 'top-center'});
-
+      toast.success("Endereço vinculado ao carrinho com sucesso", {
+        position: "top-center",
+      });
     } catch (error) {
       toast.error("Erro ao salvar endereço, Tente novamente!");
       console.log(error);
     }
   }
 
-
   const handleGoToPayment = async () => {
-    if (!selectAddress || selectAddress == "add_new") return;
+    if (!selectedAddress || selectedAddress == "add_new") return;
 
     try {
       await updateCartShippingAddressMutation.mutateAsync({
-        shippingAddressId: selectAddress,
+        shippingAddressId: selectedAddress,
       });
-      toast.success("Endereço selecionado para entrega!", {position: 'top-center'});
+      toast.success("Endereço selecionado para entrega!", {
+        position: "top-center",
+      });
 
-      router.push('/cart/confirmation')
-
+      router.push("/cart/confirmation");
     } catch (error) {
       toast.error("Erro ao selecionar endereço. Tente Novamente");
       console.log(error);
@@ -140,7 +173,10 @@ const Addresses = ({
             <p>Carregando endereços</p>
           </div>
         ) : (
-          <RadioGroup value={selectAddress} onValueChange={setSelectedAddress}>
+          <RadioGroup
+            value={selectedAddress}
+            onValueChange={setSelectedAddress}
+          >
             {addresses?.length === 0 && (
               <div className="py-4 text-center">
                 <p className="text-muted-foreground">
@@ -150,7 +186,7 @@ const Addresses = ({
             )}
 
             {addresses?.map((address) => (
-              <Card key={address.id}>
+              <Card key={address.id} className="relative">
                 <CardContent>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value={address.id} id={address.id} />
@@ -161,8 +197,42 @@ const Addresses = ({
                     </div>
                   </div>
                 </CardContent>
+
+                <Button
+                  onClick={() => {
+                    setAddressToDelete(address.id);
+                    setConfirmDialogOpen(true);
+                  }}
+                  className="absolute -top-2 -right-4 rounded-full"
+                  size="sm"
+                >
+                  <Trash2 />
+                </Button>
               </Card>
             ))}
+
+            <Dialog
+              open={confirmDialogOpen}
+              onOpenChange={setConfirmDialogOpen}
+            >
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    Tem certeza que deseja excluir esse endereço
+                  </DialogTitle>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    variant="destructive"
+                    className="mt-3 w-full rounded-full"
+                    size="lg"
+                    onClick={handleDeleteAddressClick}
+                  >
+                    Excluir
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             <Card>
               <CardContent>
@@ -175,7 +245,7 @@ const Addresses = ({
           </RadioGroup>
         )}
 
-        {selectAddress && selectAddress !== "add_new" && (
+        {selectedAddress && selectedAddress !== "add_new" && (
           <div className="mt-4">
             <Button
               onClick={handleGoToPayment}
@@ -189,7 +259,7 @@ const Addresses = ({
           </div>
         )}
 
-        {selectAddress == "add_new" && (
+        {selectedAddress == "add_new" && (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
