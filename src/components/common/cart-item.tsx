@@ -8,9 +8,9 @@ import { addProductToCart } from "@/actions/add-cart-product";
 import { decreaseCartProductQuantity } from "@/actions/decrease-cart-product-quantity";
 import { removeProductFromCart } from "@/actions/remove-cart-product";
 import { FormatCentsToBRL } from "@/helpers/money";
+import { useRemoveProductFromCart } from "@/hooks/mutations/use-remove-product-from-cart";
 
 import { Button } from "../ui/button";
-import { useRemoveProductFromCart } from "@/hooks/mutations/use-remove-product-from-cart";
 
 interface CartItemProps {
   id: string;
@@ -20,6 +20,11 @@ interface CartItemProps {
   productVariantImageUrl: string;
   productVariantPriceInCents: number;
   quantity: number;
+}
+
+// Tipamos o cache como Cart | undefined para o TypeScript saber que existe items.
+interface Cart {
+  items: CartItemProps[];
 }
 
 const CartItem = ({
@@ -54,7 +59,22 @@ const CartItem = ({
     mutationKey: ["decrease-cart-product-quantity"],
     mutationFn: () => decreaseCartProductQuantity({ cartItemId: id }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      queryClient.setQueryData<Cart | undefined>(["cart"], (oldData) => {
+        if(!oldData) return oldData
+
+        return {
+          ...oldData,
+          items: oldData.items.map((item) => 
+            item.productVariantId === productVariantId
+            ? {
+              ...item,
+              quantity: item.quantity - 1,
+            } 
+            : 
+              item
+          ),
+        }
+      })
     },
   });
 
@@ -71,7 +91,23 @@ const CartItem = ({
     mutationKey: ["increase-cart-product-quantity"],
     mutationFn: () => addProductToCart({ productVariantId, quantity: 1 }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
+
+      // Atualiza o cache do carrinho diretamente de modo com q nao altere a ordem
+      queryClient.setQueryData<Cart | undefined>(["cart"], (oldData) => {
+        if (!oldData) return oldData; //Garante que, se o cache estiver vazio (undefined), não faça nada, evitando erros.
+  
+        return {
+          ...oldData,
+          items: oldData.items.map((item) =>
+            item.productVariantId === productVariantId //Para cada item verificamos se ele é o produto que estamos aumentando a quantidade.
+              ? {
+                  ...item,
+                  quantity: item.quantity + 1, // aumenta quantidade localmente
+                }
+              : item
+          ),
+        };
+      });
     },
   });
 
@@ -98,11 +134,13 @@ const CartItem = ({
 
         <div className="flex flex-col gap-2">
           <div>
-            <p className="mb-0 text-sm font-semibold">{productName}</p>
+            <p className="mb-0 text-sm font-semibold line-clamp-2">{productName}</p>
             <p className="text-muted-foreground text-xs font-medium">
               {productVariantName}
             </p>
           </div>
+
+          
 
           {/* QUANTIDADE DESEJADA */}
           <div className="h-[27px] rounded-lg border-0 border-gray-100">
@@ -134,7 +172,7 @@ const CartItem = ({
         >
           <Trash2Icon size={20} />
         </Button>
-        <div className="text-md font-semibold">
+        <div className="text-md font-semibold sm:text-base text-[10px]">
           {FormatCentsToBRL(productVariantPriceInCents)}
         </div>
       </div>

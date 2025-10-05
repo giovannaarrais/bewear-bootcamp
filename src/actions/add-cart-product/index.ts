@@ -1,12 +1,35 @@
-"use server"
-import { eq } from 'drizzle-orm';
-import { headers } from "next/headers"
+"use server";
+import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 
-import { db } from '@/db';
-import { auth } from "@/lib/auth"
+import { db } from "@/db";
+import { auth } from "@/lib/auth";
 
-import { cartItemTable, cartTable } from './../../db/schema';
-import { addProductToCartSchema } from "./schema"
+import { cartItemTable, cartTable } from "./../../db/schema";
+import { addProductToCartSchema } from "./schema";
+
+// Função auxiliar para buscar o carrinho atualizado
+async function getUpdatedCart(cartId: string) {
+    const cart = await db.query.cartTable.findFirst({
+        where: (cart, { eq }) => eq(cart.id, cartId),
+        with: {
+        shippingAddress: true,
+            items: {
+                with: {
+                    productVariant: {
+                        with: {
+                            product: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    if (!cart) {
+        throw new Error("Cart not found");
+    }
+}
 
 // Função para adicionar um produto ao carrinho
 export const addProductToCart = async (data: addProductToCartSchema) => {
@@ -71,13 +94,17 @@ export const addProductToCart = async (data: addProductToCartSchema) => {
             })
             .where(eq(cartItemTable.id, cartItem.id))
 
-        return; // terminamos aqui, não precisa adicionar de novo
+        // Retorna o carrinho atualizado
+        return await getUpdatedCart(cartId);
     }
 
     // Se o produto não está no carrinho, adicionamos como novo item
     await db.insert(cartItemTable).values({
         cartId, // dentro do carrinho certo
         productVariantId: data.productVariantId, // qual produto é
-        quantity: data.quantity // quantos produtos
-    })
-}
+        quantity: data.quantity, // quantos produtos
+    });
+
+    // Retorna o carrinho atualizado
+    return await getUpdatedCart(cartId);
+};
