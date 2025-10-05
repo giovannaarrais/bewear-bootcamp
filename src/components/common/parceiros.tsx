@@ -56,9 +56,9 @@ const Parceiros = () => {
                         href={parceiro.website} 
                         target='_blanck'
                         key={parceiro.id}
-                        className="flex flex-col">
+                        className='w-full'>
 
-                        <div className=' border border-gray-200 rounded-xl min-w-[80px] w-full min-h-[80px] flex justify-center'>
+                        <div className="border border-gray-200 rounded-xl min-w-[80px] w-full min-h-[80px] flex justify-center flex-col items-center">
                             <Image
                                 src={parceiro.logo}
                                 alt={parceiro.nome}
