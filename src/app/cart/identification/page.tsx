@@ -59,7 +59,7 @@ const IdentificatonPage = async () => {
     <div className="space-y-12">
       <Header />
 
-      <div className="flex flex-col gap-6 space-y-3 px-5 sm:flex-row-reverse">
+      <div className="flex flex-col gap-6 space-y-3 px-5 lg:flex-row-reverse">
         <div className="flex-1 space-y-5">
           <Resume
             subtotalInCents={cartTotalInCents}

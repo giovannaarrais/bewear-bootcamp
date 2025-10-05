@@ -14,6 +14,9 @@ import { auth } from '@/lib/auth';
 import CartSummary from '../components/cart-summary';
 import { formatAddress } from '../helpers/address';
 import FinishOrderButton from './components/finish-order-button';
+import Resume from '../components/resume';
+import { House, MailCheck, UserRoundCheck } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 const ConfirmationPage = async() => {
 
@@ -59,38 +62,62 @@ const ConfirmationPage = async() => {
         <>
             <Header />
             
-            <div className='space-y-4 px-5'>
+            <div className='gap-5 px-5 flex'>
+
+                <div className="flex-1">
+                    <CartSummary
+                        products={cart.items.map((item) => ({
+                            id: item.productVariant.id,
+                            name: item.productVariant.product.name,
+                            variantName: item.productVariant.name,
+                            quantity: item.quantity,
+                            priceInCents: item.productVariant.priceInCents,
+                            imageUrl: item.productVariant.imageUrl[0]
+                        }))}
+                    />
+                </div>
+
                 {/* exibicao do endereço ja selecionado */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>
-                            Identificação
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className='space-y-6'>
-                        <Card>
-                            <CardContent>
-                                {formatAddress(cart.shippingAddress)}
-                            </CardContent>
-                        </Card>
-                
-                        <FinishOrderButton />
-
-                    </CardContent>
-                </Card>
-
-                <CartSummary
-                    subtotalInCents={cartTotalInCents}
-                    totalInCents={cartTotalInCents}
-                    products={cart.items.map((item) => ({
-                        id: item.productVariant.id,
-                        name: item.productVariant.product.name,
-                        variantName: item.productVariant.name,
-                        quantity: item.quantity,
-                        priceInCents: item.productVariant.priceInCents,
-                        imageUrl: item.productVariant.imageUrl[0]
-                    }))}
-                />
+                <div className="flex-1 space-y-5">
+                    <Resume
+                        subtotalInCents={cartTotalInCents}
+                        totalInCents={cartTotalInCents}
+                    />
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>
+                                Identificação
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className='space-y-6'>
+                            <Card>
+                                <CardContent>
+                                    <p className='flex font-semibold gap-2 items-center'>
+                                        <UserRoundCheck size={20}/> {cart.shippingAddress.recipientName}
+                                    </p>
+                                    <Separator className='my-4'/>
+                                    <p>
+                                        <span className='flex gap-2 font-semibold items-center'> <House size={20}/>Endereço</span> 
+                                        {cart.shippingAddress.street}, nº{cart.shippingAddress.number} {cart.shippingAddress.complement ? ', '+ cart.shippingAddress.complement : ''}
+                                        <br />
+                                        {cart.shippingAddress.city} - {cart.shippingAddress.state}, {cart.shippingAddress.neighborhood}. CEP: {cart.shippingAddress.zipCode}
+                                    </p>
+                                    <Separator className='my-4'/>
+                                    <p>
+                                        <span className="flex gap-2 font-semibold items-center">
+                                            <MailCheck size={20}/> Informações 
+                                        </span>
+                                        Email: {cart.shippingAddress.email} <br />
+                                        Contato: {cart.shippingAddress.phone} <br />
+                                        CPF: {cart.shippingAddress.cpfOrCnpj} <br />
+                                    </p>
+                                </CardContent>
+                            </Card>
+                    
+                            <FinishOrderButton />
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
 
             <Footer />
