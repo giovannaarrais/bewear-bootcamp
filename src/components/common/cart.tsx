@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 import { getCart } from "@/actions/get-cart";
+import IdentificatonPage from "@/app/cart/identification/page";
 import {
   Sheet,
   SheetContent,
@@ -18,8 +20,6 @@ import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import CartItem from "./cart-item";
-import Link from "next/link";
-import IdentificatonPage from "@/app/cart/identification/page";
 
 // como os dados mudam frequentement, vamos usar o react query
 const Cart = () => {
@@ -41,27 +41,42 @@ const Cart = () => {
         </SheetHeader>
 
         <div className="flex h-full flex-col gap-8 p-3 pt-0">
-          <div className="flex h-full max-h-full flex-col gap-5 overflow-hidden">
-            <ScrollArea className="h-full">
-              <div className="flex h-full flex-col">
-                {cartIsLoading && <div>Caregando...</div>}
-                {cart?.items.map((item) => (
-                  <CartItem
-                    key={item.id}
-                    id={item.id}
-                    productVariantId={item.productVariant.id}
-                    productName={item.productVariant.product.name}
-                    productVariantName={item.productVariant.name}
-                    productVariantImageUrl={item.productVariant.imageUrl[0]}
-                    productVariantPriceInCents={
-                      item.productVariant.priceInCents
-                    }
-                    quantity={item.quantity}
-                  />
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
+          {!cart?.items.length && (
+            <div className="h-full justify-center items-center flex flex-col bottom-15 relative">
+              <Image
+                src="/msgs/empty-cart.svg"
+                alt="Ilustração carrinho vazio"
+                width={200}
+                height={200}
+              />
+              <h4 className="text-1xl text-center font-semibold mt-7 ">
+                Seu carrinho esta vazio, adicione nossos produtos para visualizar aqui
+              </h4>
+            </div>
+          )}
+          {cart?.items.length != 0 && (
+            <div className="flex h-full max-h-full flex-col gap-5 overflow-hidden">
+              <ScrollArea className="h-full">
+                <div className="flex h-full flex-col">
+                  {cartIsLoading && <div>Caregando...</div>}
+                  {cart?.items.map((item) => (
+                    <CartItem
+                      key={item.id}
+                      id={item.id}
+                      productVariantId={item.productVariant.id}
+                      productName={item.productVariant.product.name}
+                      productVariantName={item.productVariant.name}
+                      productVariantImageUrl={item.productVariant.imageUrl[0]}
+                      productVariantPriceInCents={
+                        item.productVariant.priceInCents
+                      }
+                      quantity={item.quantity}
+                    />
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+          )}
 
           {cart?.items && cart?.items.length > 0 && (
             <div className="flex flex-col gap-4">
@@ -84,9 +99,7 @@ const Cart = () => {
               </div>
 
               <Button variant="default" className="mt-4 rounded-full" asChild>
-                <Link href='/cart/identification'>
-                  Finalizar Compra
-                </Link>
+                <Link href="/cart/identification">Finalizar Compra</Link>
               </Button>
             </div>
           )}

@@ -1,10 +1,22 @@
 "use client"
 
+import { error } from "console";
+import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+  } from "@/components/ui/dialog"
 
 import AddToCartButton from "./add-to-cart-button";
+import Image from "next/image";
 
 interface ProductActionsProps {
     productVariantId: string;
@@ -12,6 +24,14 @@ interface ProductActionsProps {
 
 const ProductActions = ({productVariantId}: ProductActionsProps) => {
     const [quantity, setQuantity] = useState(1)
+    const [userUnauthorized, setUserUnauthorized] = useState(false);
+    
+    const handleAddToCartError = (error: Error) => {
+        if(error.message.includes("Unauthorized")){
+            setUserUnauthorized(true)
+        }
+    }
+
 
     // funcao para diminuir quantidade, so funcionar se for mais que 1
     function subNumber(){
@@ -43,11 +63,41 @@ const ProductActions = ({productVariantId}: ProductActionsProps) => {
                 <AddToCartButton
                     productVariantId={productVariantId}
                     quantity={quantity}
+                    onError={handleAddToCartError}
                 />
                 <Button variant="default" className="rounded-3xl sm:py-6 py-4 font-semibold flex-1">
                     Comprar Agora
                 </Button>
             </div>
+
+            <Dialog 
+                open={userUnauthorized} 
+                onOpenChange={setUserUnauthorized}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <Image
+                            src='/msgs/authentication.svg'
+                            alt="Imagem de autenticação"
+                            width={250}
+                            height={250}
+                            className="m-auto"
+                        />
+                        <DialogTitle></DialogTitle>
+                    </DialogHeader>
+                    <DialogDescription className='font-medium text-center'>
+                        Realize seu login ou acesse a sua conta para possuir uma experiencia completa aqui na BEWEAR
+                    </DialogDescription>
+                    <DialogFooter>
+                        <Button 
+                        variant='default'
+                        size='lg'
+                        className='mt-3 w-full rounded-full'>
+                            Fazer login
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 };

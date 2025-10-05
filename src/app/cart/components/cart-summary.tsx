@@ -1,16 +1,12 @@
+import Image from 'next/image';
 import React from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { FormatCentsToBRL } from '@/helpers/money';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 
 
 // recebendo os dados a serem exibidos no resumo do pedido
 interface CartSummaryProps {
-    subtotalInCents: number;
-    totalInCents: number;
     products: Array<{ // vai receber uma lista de produtos
         id: string;
         name: string;
@@ -22,54 +18,30 @@ interface CartSummaryProps {
 }
 
 const CartSummary = ({ 
-    subtotalInCents, 
-    totalInCents, 
     products
 }: CartSummaryProps) => {
     return (
-    <Card>
+    <Card className="flex-1 h-max">
         <CardHeader>
             <CardTitle>
-                Resumo da compra
+                Carrinho
             </CardTitle>
         </CardHeader>
         <CardContent className='space-y-3'>
-            <div className="flex justify-between">
-                <p className='text-sm'>Subtotal</p>
-                <p className='text-sm text-foreground font-medium'>
-                    {FormatCentsToBRL(subtotalInCents)}
-                </p>
-            </div>
-
-            <div className="flex justify-between">
-                <p className='text-sm'>Frete</p>
-                <p className='text-sm text-foreground font-medium'>
-                    Grátis
-                </p>
-            </div>
-
-            <div className="flex justify-between">
-                <p className='text-sm'>Total</p>
-                <p className='text-sm text-foreground font-medium'>
-                    {FormatCentsToBRL(totalInCents)}
-                </p>
-            </div>
-
-            <Separator className='my-6'/>
-
             {products.map(product => (
                 <div className="mb-4 flex items-center justify-between" key={product.id}>
                     <div className="flex items-center gap-4">
                         <Image
                             src={product.imageUrl}
                             alt={product.name}
-                            width={78}
-                            height={78}
+                            width={120}
+                            height={120}
+                            className='rounded-md sm:w-[130px] w-[80px]'
                         />
             
                         <div className="flex flex-col gap-2">
                             <div>
-                            <p className="mb-0 text-sm font-semibold">{product.name}</p>
+                            <p className="mb-0 text-sm font-semibold line-clamp-2">{product.name}</p>
                             <p className="text-muted-foreground text-xs font-medium">
                                 {product.variantName}
                             </p>
