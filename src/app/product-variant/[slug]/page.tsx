@@ -6,6 +6,7 @@ import React from "react";
 import Footer from "@/components/common/footer";
 import Header from "@/components/common/header";
 import ProductsList from "@/components/common/products-list";
+import { getLikelyProducts, getProductsWithVariants } from "@/data/products/get";
 import { db } from "@/db";
 import {   productTable, productVariantTable } from "@/db/schema";
 import { FormatCentsToBRL } from "@/helpers/money";
@@ -21,30 +22,15 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
     const { slug } = await params;
 
     // tras as variantes do produto
-    const productVariant = await db.query.productVariantTable.findFirst({
-        where: eq(productVariantTable.slug, slug),
-        with: {
-            // e tras o produto a qm essa variante pertence e as variantes desse
-            product: {
-                with: {
-                    variants: true
-                }
-            }
-        }
-    });
+    const productVariant = await getProductsWithVariants(slug);
 
     if (!productVariant) {
         return notFound();
     }
 
     // captura os produtos dessa mesma categoria que pertence ao produto visualizado
-    const likelyProducts = await db.query.productTable.findMany({
-        where: eq(productTable.categoryId, productVariant.product.categoryId),
-        with: {
-            variants: true
-        }
-    })
-
+    const likelyProducts = await getLikelyProducts(productVariant.product.categoryId);
+    
     return (
         <div>
             <Header />

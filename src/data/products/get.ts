@@ -1,9 +1,9 @@
 import "server-only"; // so permite importar as nossas funcoes em server components
 
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 import { db } from "@/db"
-import { productTable } from "@/db/schema";
+import { productTable, productVariantTable } from "@/db/schema";
 
 // DTO (Data Tranfers Object)
 // interface Product{
@@ -23,6 +23,33 @@ export const getProducts = async () => {
         }
     })
     return products;
+}
+
+// tras as variantes do produto
+export const getProductsWithVariants = async (slug: string) => {
+    const productVariant = await db.query.productVariantTable.findFirst({
+        where: eq(productVariantTable.slug, slug),
+        with: {
+            // e tras o produto a qm essa variante pertence e as variantes desse
+            product: {
+                with: {
+                    variants: true
+                }
+            }
+        }
+    });
+    return productVariant;
+}
+
+// captura os produtos dessa mesma categoria que pertence ao produto visualizado
+export const getLikelyProducts = async (productVariant: string) => {
+    const likelyProducts = await db.query.productTable.findMany({
+        where: eq(productTable.categoryId, productVariant),
+        with: {
+            variants: true
+        }
+    })
+    return likelyProducts;
 }
 
 // ordernacao decrescente das datas de criacao da table de produtos
