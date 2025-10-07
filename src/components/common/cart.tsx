@@ -41,7 +41,7 @@ const Cart = () => {
         </SheetHeader>
 
         <div className="flex h-full flex-col gap-8 p-3 pt-0">
-          {!cart?.items.length && (
+          {!cart?.items.length  && (
             <div className="h-full justify-center items-center flex flex-col bottom-15 relative">
               <Image
                 src="/msgs/empty-cart.svg"
@@ -54,11 +54,10 @@ const Cart = () => {
               </h4>
             </div>
           )}
-          {cart?.items.length != 0 && (
+          {cart?.items.length && (
             <div className="flex h-full max-h-full flex-col gap-5 overflow-hidden">
               <ScrollArea className="h-full">
                 <div className="flex h-full flex-col">
-                  {cartIsLoading && <div>Caregando...</div>}
                   {cart?.items.map((item) => (
                     <CartItem
                       key={item.id}

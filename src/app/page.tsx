@@ -25,7 +25,7 @@ export default async function Home() {
           <CategorySelectorDesktop categories={categories} />
         </div>
 
-      <div className="space-y-6">
+      <div className="space-y-15">
         <Image
           src="/destaque-dk.png"
           alt="Leve uma vida com estilo"
