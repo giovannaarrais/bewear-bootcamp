@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
 
 import { db } from '@/db';
-import { cartTable, orderItemTable, orderTable } from '@/db/schema';
+import { cartItemTable, cartTable, orderItemTable, orderTable } from '@/db/schema';
 import { auth } from '@/lib/auth';
 
 export const finishOrder = async () => {
@@ -84,6 +84,11 @@ export const finishOrder = async () => {
         // insere os itens do pedido
         await tx.insert(orderItemTable).values(orderItemsPayload)
 
+         // deletar o item do carrinho
+        await tx.delete(cartTable).where(eq(cartTable.id, cart.id))
+
+        // deletar o item do carrinho
+        await tx.delete(cartItemTable).where(eq(cartItemTable.cartId, cart.id))
     })
 
     if (!orderId){
