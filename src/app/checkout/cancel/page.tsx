@@ -1,11 +1,13 @@
-import React from 'react';
+import React from "react";
+
+import Header from "@/components/common/header";
 
 const CheckoutCancelPage = () => {
-    return (
-        <div>
-        <h1>Checkout cancel</h1>
-        </div>
-    );
+  return (
+    <>
+        <Header />
+    </>
+  );
 };
 
 export default CheckoutCancelPage;

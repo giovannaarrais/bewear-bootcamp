@@ -1,5 +1,6 @@
 import React from "react";
 
+import Footer from "@/components/common/footer";
 import Header from "@/components/common/header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -11,11 +12,11 @@ const Authentication = async () => {
         <>
             <Header />
             
-            <div className="flex w-full  flex-col gap-6 p-5">
+            <div className="flex lg:w-lg md:w-md m-auto flex-col gap-6 p-5">
                 <Tabs defaultValue="sign-in">
                 {" "}
                 {/* qual vai ser a padrao */}
-                <TabsList>
+                <TabsList className="w-full">
                     <TabsTrigger value="sign-in">Entrar</TabsTrigger>
                     <TabsTrigger value="sign-up">Criar Conta</TabsTrigger>
                 </TabsList>
@@ -29,6 +30,7 @@ const Authentication = async () => {
                 </TabsContent>
                 </Tabs>
             </div>
+
         </>
     );
 };
