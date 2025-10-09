@@ -32,7 +32,7 @@ export default async function Home() {
           width={0}
           height={0}
           sizes="100vw"
-          className="h-auto  w-full px-5"
+          className=" w-full px-5 object-cover object-top max-h-[800px] md:rounded-b-4xl md:rounded-l-4xl"
         />
 
         <Parceiros />
