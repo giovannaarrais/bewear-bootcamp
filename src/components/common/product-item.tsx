@@ -27,7 +27,7 @@ const ProductItem = ({ product, textContainerClassName }: ProductsItemProps) => 
                 sizes="100vw"
                 width={0}
                 height={0}
-                className="h-auto w-full rounded-3xl"
+                className="h-auto w-full rounded-2xl"
             />
 
 {/* permite q em outros lugares q for reutilizar esse component seja possivel add mais estilo */}
