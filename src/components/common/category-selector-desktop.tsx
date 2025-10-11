@@ -9,12 +9,12 @@ interface CategorySelectorProps {
 
 const CategorySelectorDesktop = ({ categories }: CategorySelectorProps) => {
     return (
-        <div className="flex gap-3 justify-around border-1 border-gray-100 rounded-full p-2 px-3">
+        <div className="flex gap-3 justify-around border-1 border-gray-100 rounded-full p-2 px-3 items-center">
             {categories.map((category) => (
                 <Link 
                     href={`/category/${category.slug}`} 
                     key={category.id}
-                    className='border-1 border-gray-200 text-center rounded-full font-semibold text-muted-foreground text-xs py-3 bg-white hover:bg-gray-200 w-1/2'
+                    className='border-1 border-gray-200 text-center rounded-full font-semibold text-muted-foreground text-xs py-3 bg-white hover:bg-gray-200 w-1/2 h-max'
                 >
                     {category.name}
                 </Link>
