@@ -6,9 +6,9 @@ Um e-commerce moderno e responsivo para venda de roupas, desenvolvido com Next.j
 
 ### Framework e Linguagem
 
-- **Next.js 15.4.1** - Framework React para produção
-- **React 19.1.0** - Biblioteca para interfaces de usuário
-- **TypeScript 5** - Superset tipado do JavaScript
+- **Next.js 15.4.1**
+- **React 19.1.0**
+- **TypeScript 5**
 
 ### Banco de Dados e ORM
 
@@ -25,13 +25,12 @@ Um e-commerce moderno e responsivo para venda de roupas, desenvolvido com Next.j
 ### UI e Estilização
 
 - **Tailwind CSS 4** - Framework CSS utilitário
-- **Radix UI** - Componentes acessíveis e customizáveis
+- **Shadcn** - Componentes acessíveis e customizáveis
 - **Lucide React** - Ícones modernos
 - **Swiper** - Carrossel de imagens
 
 ### Gerenciamento de Estado e Formulários
 
-- **TanStack Query 5.83.0** - Gerenciamento de estado do servidor
 - **React Hook Form 7.62.0** - Gerenciamento de formulários
 - **Zod 4.0.14** - Validação de schemas
 
