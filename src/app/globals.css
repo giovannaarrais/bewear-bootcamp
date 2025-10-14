@@ -119,3 +119,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.swiper-button-next,
+.swiper-button-prev{
+  padding: 10px;
+  border-radius: 100%;
+  box-shadow: 1px 1px 15px -1px #00000047;
+  color: var(--primary) !important;
+}

@@ -1,6 +1,12 @@
 "use client"; // indica q o component vai ter interatividade
 
-import { LogInIcon, LogOutIcon, Menu } from "lucide-react";
+import {
+  House,
+  LogInIcon,
+  LogOutIcon,
+  Menu,
+  Truck,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -9,6 +15,7 @@ import { authClient } from "@/lib/auth-client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -32,7 +39,7 @@ const Header = () => {
         {/* ao clicar vai abri o offcanvas -> sheet(shadcn) */}
 
         {/* BOTAO CARRINHO DE COMPRAS */}
-        <Cart  />
+        <Cart />
 
         <Sheet>
           {/* sheet trigger botao com acao */}
@@ -45,9 +52,7 @@ const Header = () => {
           {/* offcanvas q vai ser aberto ao clicar no btn acima */}
           <SheetContent>
             <SheetHeader>
-              <SheetTitle>
-                Menu
-              </SheetTitle>
+              <SheetTitle>Menu</SheetTitle>
             </SheetHeader>
 
             {/* se possuir um sessao de user */}
@@ -75,12 +80,15 @@ const Header = () => {
 
                       <div>
                         <h3 className="font-semibold">
+                          <p className="block text-xs">{session?.user?.name}</p>
+
                           <span className="text-muted-foreground block text-xs">
                             {session?.user?.email}
                           </span>
                         </h3>
                       </div>
                     </div>
+
                     <Button
                       // acao para sair da conta logada
                       size="icon"
@@ -94,16 +102,37 @@ const Header = () => {
               ) : (
                 // se nao possuir
                 <>
-                  <div className="flex items-center justify-between">
+                  <div className="mb-3 flex items-center justify-between">
                     <h2 className="font-semibold">Olá! Faça o seu login!</h2>
-                    <Button size="icon" asChild variant="outline">
+                    <Button asChild variant="default" className="rounded-full">
                       <Link href="/authentication">
-                        <LogInIcon />
+                        Login <LogInIcon />
                       </Link>
                     </Button>
                   </div>
                 </>
               )}
+
+              <Separator />
+
+              <div className="flex flex-col space-y-4 py-4">
+                <Link
+                  href="/"
+                  className="flex items-center gap-2 text-sm font-semibold"
+                >
+                  <House size={18} />
+                  Início
+                </Link>
+                <Link
+                  href="/checkout/my-orders/"
+                  className="flex items-center gap-2 text-sm font-semibold"
+                >
+                  <Truck size={18} /> Meus Pedidos
+                </Link>
+              </div>
+
+              <Separator />
+
             </div>
           </SheetContent>
         </Sheet>
