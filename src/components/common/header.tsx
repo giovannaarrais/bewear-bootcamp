@@ -24,7 +24,6 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 import Cart from "./cart";
-import CategorySelectorMenu from "./category-selector-menu";
 
 const Header = () => {
   //pegar sessao do user q esta ativa
