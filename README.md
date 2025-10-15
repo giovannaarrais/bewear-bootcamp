@@ -194,11 +194,8 @@ src/
 
 - [ ] Implementar sistema de avaliações
 - [ ] Adicionar mais métodos de pagamento
-- [ ] Sistema de cupons de desconto
-- [ ] Wishlist/favoritos
 - [ ] Notificações por email
 - [ ] Dashboard administrativo
-- [ ] PWA (Progressive Web App)
 
 ---
 
