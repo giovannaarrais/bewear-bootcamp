@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 
 import Footer from "@/components/common/footer";
 import Header from "@/components/common/header";
 import { db } from "@/db";
-import { shippingAddressTable } from "@/db/schema";
+import { cartItemTable, shippingAddressTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import CartSummary from "../components/cart-summary";
@@ -38,6 +38,7 @@ const IdentificatonPage = async () => {
     },
   });
 
+
   // verifica se user possui carrinho ou itens no carrinho
   // se nao redireciona para a pagina home
   if (!cart || cart.items.length === 0) {
@@ -54,6 +55,7 @@ const IdentificatonPage = async () => {
   const shippingAddresses = await db.query.shippingAddressTable.findMany({
     where: eq(shippingAddressTable.userId, session.user.id),
   });
+
 
   return (
     <div className="space-y-12">
@@ -79,6 +81,7 @@ const IdentificatonPage = async () => {
             quantity: item.quantity,
             priceInCents: item.productVariant.priceInCents,
             imageUrl: item.productVariant.imageUrl[0],
+            cartItemId: item.id
           }))}
         />
       </div>

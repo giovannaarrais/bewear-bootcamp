@@ -254,7 +254,7 @@ const Addresses = ({
             >
               {updateCartShippingAddressMutation.isPending
                 ? "Processando.."
-                : "Ir para o pagamento"}
+                : "Confirmar Dados"}
             </Button>
           </div>
         )}

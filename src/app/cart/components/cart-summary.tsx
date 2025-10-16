@@ -1,8 +1,14 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
+import { removeProductFromCart } from '@/actions/remove-cart-product';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormatCentsToBRL } from '@/helpers/money';
+
+import RemoveToCartButton from './remove-to-cart-button';
 
 
 // recebendo os dados a serem exibidos no resumo do pedido
@@ -14,12 +20,15 @@ interface CartSummaryProps {
         quantity: number;
         priceInCents: number;
         imageUrl: string;
+        cartItemId: string
     }>
 }
 
 const CartSummary = ({ 
     products
 }: CartSummaryProps) => {
+
+    
     return (
     <Card className="flex-1 h-max">
         <CardHeader>
@@ -29,7 +38,7 @@ const CartSummary = ({
         </CardHeader>
         <CardContent className='space-y-3'>
             {products.map(product => (
-                <div className="mb-4 flex items-center justify-between" key={product.id}>
+                <div className="mb-4 flex items-center justify-between relative" key={product.id}>
                     <div className="flex items-center gap-4">
                         <Image
                             src={product.imageUrl}
@@ -38,7 +47,7 @@ const CartSummary = ({
                             height={120}
                             className='rounded-md sm:w-[130px] w-[80px]'
                         />
-            
+
                         <div className="flex flex-col gap-2">
                             <div>
                             <p className="mb-0 text-sm font-semibold line-clamp-2">{product.name}</p>
@@ -59,6 +68,11 @@ const CartSummary = ({
                             {FormatCentsToBRL(product.priceInCents)}
                         </div>
                     </div>
+
+                    <RemoveToCartButton
+                        cartItemId={product.cartItemId}
+                    />
+                    
                 </div>
             ))}
         </CardContent>

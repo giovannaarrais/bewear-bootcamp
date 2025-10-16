@@ -1,6 +1,7 @@
 "use client"
 
 import { error } from "console";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -16,7 +17,7 @@ import {
   } from "@/components/ui/dialog"
 
 import AddToCartButton from "./add-to-cart-button";
-import Image from "next/image";
+import ComprarAgora from "./comprar-agora";
 
 interface ProductActionsProps {
     productVariantId: string;
@@ -65,9 +66,10 @@ const ProductActions = ({productVariantId}: ProductActionsProps) => {
                     quantity={quantity}
                     onError={handleAddToCartError}
                 />
-                <Button variant="default" className="rounded-3xl sm:py-6 py-4 font-semibold flex-1">
-                    Comprar Agora
-                </Button>
+                <ComprarAgora 
+                    productVariantId={productVariantId}
+                    quantity={quantity}
+                />
             </div>
 
             <Dialog 
