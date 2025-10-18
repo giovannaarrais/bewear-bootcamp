@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { House, MailCheck, UserRoundCheck } from 'lucide-react';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import React from 'react';
@@ -7,16 +8,15 @@ import Footer from '@/components/common/footer';
 import Header from '@/components/common/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { db } from '@/db';
 import { shippingAddressTable } from '@/db/schema';
 import { auth } from '@/lib/auth';
 
 import CartSummary from '../components/cart-summary';
+import Resume from '../components/resume';
 import { formatAddress } from '../helpers/address';
 import FinishOrderButton from './components/finish-order-button';
-import Resume from '../components/resume';
-import { House, MailCheck, UserRoundCheck } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
 
 const ConfirmationPage = async() => {
 
@@ -72,7 +72,8 @@ const ConfirmationPage = async() => {
                             variantName: item.productVariant.name,
                             quantity: item.quantity,
                             priceInCents: item.productVariant.priceInCents,
-                            imageUrl: item.productVariant.imageUrl[0]
+                            imageUrl: item.productVariant.imageUrl[0],
+                            cartItemId: item.id
                         }))}
                     />
                 </div>
