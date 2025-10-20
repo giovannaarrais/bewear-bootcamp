@@ -8,8 +8,9 @@ import { auth } from "@/lib/auth"
 
 import { cartItemTable } from './../../db/schema';
 import { removeProductFromCartSchema } from './schema';
+import { revalidatePath } from 'next/cache';
 
-// Função para adicionar um produto ao carrinho
+// Função para remover um produto do carrinho
 export const removeProductFromCart = async (data: removeProductFromCartSchema) => {
     
     // Primeiro, verificamos se os dados que chegaram estão corretos
@@ -47,5 +48,7 @@ export const removeProductFromCart = async (data: removeProductFromCartSchema) =
     // Deletar o produto com o id clicado
     if(cartItem){
         await db.delete(cartItemTable).where(eq(cartItemTable.id, cartItem.id))
+
+        revalidatePath("/cart") // força revalidação da rota (por exemplo: /cart)
     }
 }

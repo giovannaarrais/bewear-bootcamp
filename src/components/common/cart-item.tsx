@@ -6,7 +6,6 @@ import { toast } from "sonner";
 
 import { addProductToCart } from "@/actions/add-cart-product";
 import { decreaseCartProductQuantity } from "@/actions/decrease-cart-product-quantity";
-import { removeProductFromCart } from "@/actions/remove-cart-product";
 import { FormatCentsToBRL } from "@/helpers/money";
 import { useRemoveProductFromCart } from "@/hooks/mutations/use-remove-product-from-cart";
 

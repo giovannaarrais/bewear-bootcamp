@@ -1,5 +1,5 @@
 "use server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 
 import { db } from "@/db";
@@ -29,6 +29,8 @@ async function getUpdatedCart(cartId: string) {
     if (!cart) {
         throw new Error("Cart not found");
     }
+
+    return cart;
 }
 
 // Função para adicionar um produto ao carrinho
@@ -41,6 +43,8 @@ export const addProductToCart = async (data: addProductToCartSchema) => {
     const session = await auth.api.getSession({
         headers: await headers(),
     })
+
+    console.log('Usuario logado ',session?.user.name, 'email', session?.user.email)
 
     // Se não tiver ninguém logado, não podemos continuar
     if(!session?.user){
@@ -80,9 +84,10 @@ export const addProductToCart = async (data: addProductToCartSchema) => {
 
     // Agora vamos ver se o produto já está no carrinho
     const cartItem = await db.query.cartItemTable.findFirst({
-        where: (cartItem, { eq }) => 
-            eq(cartItem.cartId, cartId) && // dentro do carrinho certo
-            eq(cartItem.productVariantId, data.productVariantId) // e é o produto certo
+        where: and( 
+            eq(cartItemTable.cartId, cartId), // dentro do carrinho certo
+            eq(cartItemTable.productVariantId, data.productVariantId)
+        ) // e é o produto certo
     })
 
     // Se o produto já está no carrinho, só aumentamos a quantidade
@@ -104,6 +109,7 @@ export const addProductToCart = async (data: addProductToCartSchema) => {
         productVariantId: data.productVariantId, // qual produto é
         quantity: data.quantity, // quantos produtos
     });
+    
 
     // Retorna o carrinho atualizado
     return await getUpdatedCart(cartId);
