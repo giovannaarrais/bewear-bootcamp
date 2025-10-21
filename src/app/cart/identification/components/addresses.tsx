@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
 import z from "zod";
+import { da } from "zod/v4/locales";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,7 +46,7 @@ const formSchema = z.object({
   fullName: z.string().min(1, "Nome completo é obrigatório"),
   cpf: z.string().min(14, "CPF Inválido"),
   phone: z.string().min(1, "Celular obrigatório"),
-  zipCode: z.string().min(8, "CEP Inválido"),
+  zipCode: z.string().min(8).regex(/^\d{5}-?\d{3}$/, "CEP Inválido"),
   address: z.string().min(1, "Endereço é obrigatório"),
   number: z.string().min(1, "Número obrigatório"),
   complement: z.string().optional(),
@@ -121,27 +122,7 @@ const Addresses = ({
     },
   });
 
-  // submit do formulário
-  async function onSubmit(values: FormValues) {
-    try {
-      const newAddress =
-        await createShippingAddressMutation.mutateAsync(values);
-      toast.success("Endereço criado com sucesso");
 
-      form.reset();
-      setSelectedAddress(newAddress.id);
-
-      await updateCartShippingAddressMutation.mutateAsync({
-        shippingAddressId: newAddress.id,
-      });
-      toast.success("Endereço vinculado ao carrinho com sucesso", {
-        position: "top-center",
-      });
-    } catch (error) {
-      toast.error("Erro ao salvar endereço, Tente novamente!");
-      console.log(error);
-    }
-  }
 
   const handleGoToPayment = async () => {
     if (!selectedAddress || selectedAddress == "add_new") return;
@@ -160,6 +141,57 @@ const Addresses = ({
       console.log(error);
     }
   };
+
+  
+  // API CEP
+  const [cep, setCep] = useState("")
+  const [isReadOnly, setIsReadyOnly] = useState(false)
+  
+  const buscarCep = async (cep: string) => {
+    try{
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      const data = await response.json()
+  
+      if (data.erro) {
+        console.log('cep nao encontrado')
+        setIsReadyOnly(false)
+      }
+
+      form.setValue("address", data.logradouro)
+      form.setValue("city", data.localidade)
+      form.setValue("neighborhood", data.bairro)
+      form.setValue("state", data.estado)
+
+      setIsReadyOnly(true)
+    } catch {
+      console.log('erro ao buscar cep')
+    }
+  }
+
+  // submit do formulário
+  async function onSubmit(values: FormValues) {
+    try {
+      const newAddress =
+        await createShippingAddressMutation.mutateAsync(values);
+      toast.success("Endereço criado com sucesso");
+
+      form.reset();
+      setCep('')
+      setSelectedAddress(newAddress.id);
+
+      await updateCartShippingAddressMutation.mutateAsync({
+        shippingAddressId: newAddress.id,
+      });
+      
+      toast.success("Endereço vinculado ao carrinho com sucesso", {
+        position: "top-center",
+      });
+    } catch (error) {
+      toast.error("Erro ao salvar endereço, Tente novamente!");
+      console.log(error);
+    }
+  }
+
 
   return (
     <Card>
@@ -344,6 +376,13 @@ const Addresses = ({
                           placeholder="CEP"
                           customInput={Input}
                           {...field}
+                          value={cep}
+                          onChange={(e) => {
+                            const onlyNumbers = e.target.value.replaceAll(/\D/g, "")
+                            setCep(onlyNumbers)
+                            form.setValue("zipCode", onlyNumbers)
+                          }}
+                          onBlur={() => buscarCep(cep)}
                         ></PatternFormat>
                       </FormControl>
                       <FormMessage />
@@ -357,7 +396,7 @@ const Addresses = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Input placeholder="Endereço" {...field} />
+                        <Input placeholder="Endereço" {...field} readOnly={isReadOnly}/>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -386,7 +425,7 @@ const Addresses = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input placeholder="Cidade" {...field} />
+                          <Input placeholder="Cidade" {...field} readOnly={isReadOnly}/>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -401,7 +440,7 @@ const Addresses = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input placeholder="Bairro" {...field} />
+                          <Input placeholder="Bairro" {...field} readOnly={isReadOnly}/>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -414,7 +453,7 @@ const Addresses = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input placeholder="Estado" {...field} />
+                          <Input placeholder="Estado" {...field} readOnly={isReadOnly}/>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
