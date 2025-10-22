@@ -36,8 +36,6 @@ const CategoryPage = async ({ params }: CategoryPageProps) => {
 
     return (
         <>
-            <Header />
-
             <div className='px-5 space-y-6'>
                 <h2 className='font-semibold text-xl'>{category.name}</h2>
 

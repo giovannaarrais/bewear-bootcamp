@@ -10,8 +10,6 @@ import SignUpForm from "./components/sign-up-form";
 const Authentication = async () => {
     return (
         <>
-            <Header />
-            
             <div className="flex lg:w-lg md:w-md m-auto flex-col gap-6 p-5">
                 <Tabs defaultValue="sign-in">
                 {" "}

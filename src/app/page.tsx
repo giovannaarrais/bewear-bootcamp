@@ -10,21 +10,18 @@ import { getCategories } from "@/data/categories/get";
 import { getNewlyCreatedProducts, getProducts } from "@/data/products/get";
 
 export default async function Home() {
-  // como uma query nao depende da outra 
+  // como uma query nao depende da outra
   const [products, newlyCreatedProducts, categories] = await Promise.all([
     getProducts(), // capturar produtos do banco e suas variantes e categorias
     getNewlyCreatedProducts(), // ordernacao decrescente das datas de criacao da table de produtos
     getCategories(),
-  ])
-
+  ]);
 
   return (
     <>
-      <Header />
-
-      <div className="p-5 pt-0 sm:block hidden">
-          <CategorySelectorDesktop categories={categories} />
-        </div>
+      <div className="hidden p-5 pt-0 sm:block">
+        <CategorySelectorDesktop categories={categories} />
+      </div>
 
       <div className="space-y-15">
         <Image
@@ -33,14 +30,14 @@ export default async function Home() {
           width={0}
           height={0}
           sizes="100vw"
-          className=" w-full px-5 object-cover object-top max-h-[800px] md:rounded-b-4xl md:rounded-l-4xl"
+          className="max-h-[800px] w-full object-cover object-top px-5 md:rounded-l-4xl md:rounded-b-4xl"
         />
 
         <Parceiros />
 
         <ProductsList products={products} title="Mais vendidos" />
 
-        <div className="p-5 sm:hidden block">
+        <div className="block p-5 sm:hidden">
           <CategorySelector categories={categories} />
         </div>
 
@@ -50,37 +47,37 @@ export default async function Home() {
           width={0}
           height={0}
           sizes="100vw"
-          className="h-auto w-full px-5 sm:hidden block"
+          className="block h-auto w-full px-5 sm:hidden"
         />
 
-        <div className="sm:block hidden">
-          <div className="flex flex-col md:flex-row gap-4 max-w-7xl mx-auto p-4">
+        <div className="hidden sm:block">
+          <div className="mx-auto flex max-w-7xl flex-col gap-4 p-4 md:flex-row">
             {/* Coluna Esquerda */}
-            <div className="flex flex-col gap-4 flex-1">
+            <div className="flex flex-1 flex-col gap-4">
               <Image
                 src="/destaque-mini-dk.png"
                 alt="Nike Therma FIT Headed"
                 width={513}
                 height={307}
-                className="w-full h-auto rounded-lg object-cover shadow-sm"
+                className="h-auto w-full rounded-lg object-cover shadow-sm"
               />
               <Image
                 src="/destaque-mini-dk2.png"
                 alt="Nike Therma FIT Headed"
                 width={513}
                 height={307}
-                className="w-full h-auto rounded-lg object-cover shadow-sm"
+                className="h-auto w-full rounded-lg object-cover shadow-sm"
               />
             </div>
 
             {/* Coluna Direita */}
-            <div className="flex-2 flex">
+            <div className="flex flex-2">
               <Image
                 src="/destaque-minibottom-dk.png"
                 alt="Nike Therma FIT Headed"
                 width={1026}
                 height={614}
-                className="w-full h-full rounded-lg object-cover shadow-sm"
+                className="h-full w-full rounded-lg object-cover shadow-sm"
               />
             </div>
           </div>

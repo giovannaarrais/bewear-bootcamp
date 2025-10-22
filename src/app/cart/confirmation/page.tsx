@@ -60,8 +60,6 @@ const ConfirmationPage = async() => {
     }
     return (
         <>
-            <Header />
-            
             <div className='gap-5 px-5 flex md:flex-row flex-col'>
 
                 <div className="flex-1">
