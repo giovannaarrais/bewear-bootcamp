@@ -5,7 +5,6 @@ import Header from "@/components/common/header";
 const CheckoutCancelPage = () => {
   return (
     <>
-        <Header />
     </>
   );
 };

@@ -30,7 +30,7 @@ const Header = () => {
   const { data: session } = authClient.useSession();
 
   return (
-    <header className="mb-5 flex items-center justify-between p-5 shadow">
+    <header className="mb-5 flex items-center justify-between p-5 shadow fixed w-full bg-white h-[80px] z-10">
       <Link href="/">
         <Image src="/logo.svg" alt="Logo Bewear" width={100} height={6.14} />
       </Link>

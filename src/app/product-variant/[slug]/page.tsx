@@ -33,7 +33,6 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
     
     return (
         <div>
-            <Header />
             
             <div className="flex md:flex-row flex-col mb-8 px-5">
                 <div className="flex-1">

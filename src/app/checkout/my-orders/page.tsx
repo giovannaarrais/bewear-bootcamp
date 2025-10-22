@@ -38,7 +38,6 @@ const MyOrdersPage = async() => {
 
     return (
         <>
-            <Header />
             <div className='mx-5 space-y-3'>
                 <Orders 
                     orders={orders.map((order) => ({
