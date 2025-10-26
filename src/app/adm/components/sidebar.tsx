@@ -19,7 +19,7 @@ const menuItems = [
     {
         title: 'Dashboard',
         icon: '',
-        url: '#',
+        url: '/adm',
         acess: 1
     },
     {
@@ -69,26 +69,30 @@ const menuItems = [
 const AppSidebar = () => {
     return (
         <Sidebar>
-            
+            <SidebarHeader>
+                <SidebarGroupLabel>
+                    <Link href='/'>
+                        <Image src='/logo.svg' alt='Logo Bewear' width={100} height={30}/>
+                    </Link>
+                </SidebarGroupLabel>
+            </SidebarHeader>
+
             <SidebarContent>
                 <SidebarGroup />
-                <SidebarGroupLabel>
-                    <Image src='/logo.svg' alt='Logo Bewear' width={100} height={30}/>
-                </SidebarGroupLabel>
-                <SidebarGroupContent>
-                    <SidebarMenu>
-                        {menuItems.map((item) => (
-                            <SidebarMenuItem key={item.title}>
-                                <SidebarMenuButton asChild>
-                                    <Link href={item.url}>
-                                        {item.icon}
-                                        <span>{item.title}</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        ))}
-                    </SidebarMenu>
-                </SidebarGroupContent>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            {menuItems.map((item) => (
+                                <SidebarMenuItem key={item.title}>
+                                    <SidebarMenuButton asChild>
+                                        <Link href={item.url}>
+                                            {item.icon}
+                                            <span>{item.title}</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+                        </SidebarMenu>
+                    </SidebarGroupContent>
                 <SidebarGroup />
             </SidebarContent>
 

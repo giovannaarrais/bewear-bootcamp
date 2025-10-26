@@ -1,9 +1,12 @@
+import "./globals.css";
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+
+import { ConditionalHeader } from "@/components/common/conditional-header";
+import { ConditionalMain } from "@/components/common/conditional-main";
 import { Toaster } from "@/components/ui/sonner";
 import ReactQueryProvider from "@/providers/react-query";
-import Header from "@/components/common/header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,11 +34,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReactQueryProvider>
-          <Header />
+          <ConditionalHeader />
 
-          <main className="relative top-25">
-            {children}
-          </main>
+          <ConditionalMain>{children}</ConditionalMain>
         </ReactQueryProvider>
 
         <Toaster />

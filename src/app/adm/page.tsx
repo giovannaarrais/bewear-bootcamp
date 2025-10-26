@@ -1,15 +1,10 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-
-import AppSidebar from "./components/sidebar";
-
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function AdmPage() {
     return (
-        <SidebarProvider>
-            <AppSidebar />
-            <SidebarTrigger />
-            <main>
-                {children}
-            </main>
-        </SidebarProvider>
+        <div>
+            <h1 className="text-3xl font-bold">Dashboard Admin</h1>
+            <p className="text-muted-foreground">
+                Bem-vindo ao painel administrativo BEWEAR
+            </p>
+        </div>
     );
 }
