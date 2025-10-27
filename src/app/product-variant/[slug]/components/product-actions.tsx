@@ -3,6 +3,7 @@
 import { error } from "console";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -26,7 +27,8 @@ interface ProductActionsProps {
 const ProductActions = ({productVariantId}: ProductActionsProps) => {
     const [quantity, setQuantity] = useState(1)
     const [userUnauthorized, setUserUnauthorized] = useState(false);
-    
+    const router = useRouter()
+
     const handleAddToCartError = (error: Error) => {
         if(error.message.includes("Unauthorized")){
             setUserUnauthorized(true)
@@ -69,6 +71,7 @@ const ProductActions = ({productVariantId}: ProductActionsProps) => {
                 <ComprarAgora 
                     productVariantId={productVariantId}
                     quantity={quantity}
+                    onError={handleAddToCartError}
                 />
             </div>
 
@@ -94,7 +97,10 @@ const ProductActions = ({productVariantId}: ProductActionsProps) => {
                         <Button 
                         variant='default'
                         size='lg'
-                        className='mt-3 w-full rounded-full'>
+                        className='mt-3 w-full rounded-full'
+                        onClick={() => {
+                            router.push('/authentication')
+                        }}>
                             Fazer login
                         </Button>
                     </DialogFooter>

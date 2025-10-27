@@ -3,16 +3,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { addProductToCart } from "@/actions/add-cart-product";
 import { Button } from "@/components/ui/button";
 
 interface ComprarAgoraProps {
     productVariantId: string,
-    quantity: number
+    quantity: number,
+    onError: (error: Error) => void
 }
 
-const ComprarAgora = ({ productVariantId, quantity }: ComprarAgoraProps) => {
+const ComprarAgora = ({ productVariantId, quantity, onError }: ComprarAgoraProps) => {
 
     const router = useRouter()
     const queryClient = useQueryClient()
@@ -25,8 +27,15 @@ const ComprarAgora = ({ productVariantId, quantity }: ComprarAgoraProps) => {
             router.push('/cart/identification')
             queryClient.invalidateQueries({queryKey: ['cart']})
         },
-        onError: (error) => {
-            console.log('Erro ao comprar agora: ', error)
+        onError: (err: unknown) => {
+            if(err instanceof Error){
+                if (err.message.includes("Unauthorized")){
+                    onError?.(err)
+                }
+                else{
+                    toast.error("Erro ao adicionar ao carrinho")
+                }
+            }
         }
     })
 
