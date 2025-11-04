@@ -1,10 +1,47 @@
+import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
-import Header from "@/components/common/header";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const CheckoutCancelPage = () => {
   return (
     <>
+      <Dialog open={true}>
+        <DialogContent>
+          <DialogHeader>
+            <Image
+              src="/msgs/cancel-pay.svg"
+              alt="Imagem ilustrativa de sucesso"
+              width={251}
+              height={233}
+              className="m-auto pb-7"
+            />
+            <DialogTitle>Pedido Cancelado</DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="text-center font-medium">
+            Seu pedido não foi efetuado. Tente novamente clicando no botão abaixo.
+          </DialogDescription>
+          <DialogFooter className="flex sm:flex-col">
+            <Button
+              variant="outline"
+              size="lg"
+              className="mt-3 w-full rounded-full"
+              asChild
+            >
+              <Link href="/checkout/my-orders">Ver Meus Pedidos</Link>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

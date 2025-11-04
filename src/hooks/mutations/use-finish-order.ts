@@ -14,7 +14,7 @@ export const useFinishOrder = () => {
   return useMutation({
     mutationKey: getFinishOrderMutationKey(),
     mutationFn: async () => {
-      return await finishOrder();
+    return await finishOrder();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
