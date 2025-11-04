@@ -32,7 +32,7 @@ const TableProducts = ({ products }: ProductProps)  => {
                     <TableHead>Descrição</TableHead>
                     <TableHead  className="text-center">Estoque</TableHead>
                     <TableHead className="text-center">Variantes</TableHead>
-                    <TableHead >Ações</TableHead>
+                    <TableHead className='text-center'>Ações</TableHead>
                     </TableRow>
                 </TableHeader>
 
@@ -46,7 +46,7 @@ const TableProducts = ({ products }: ProductProps)  => {
                         <TableCell className='max-w-[150px] overflow-x-hidden text-ellipsis'>{product.description}</TableCell>
                         <TableCell className="text-center">0</TableCell>
                         <TableCell className="text-center">{product.variants.length}</TableCell>
-                        <TableCell className=" space-x-2">
+                        <TableCell className="text-center space-x-2">
                             <Button variant='default' size="sm">
                                 <SquarePen />
                             </Button>

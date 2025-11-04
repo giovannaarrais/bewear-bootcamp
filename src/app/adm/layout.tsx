@@ -1,14 +1,27 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
 import {
     SidebarInset,
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { adminAuth } from "@/lib/auth-admin";
 
 import AppSidebar from "./components/sidebar";
 
-export default function AdmLayout({
+export default async function AdmLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
+
+    // const session = await adminAuth.api.getSession({
+    //     headers: await headers()
+    // })
+
+    // if(!session?.user) {
+    //     redirect("/adm/login")
+    // }
+
     return (
         <SidebarProvider>
             <AppSidebar />

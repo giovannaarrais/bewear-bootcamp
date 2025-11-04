@@ -25,7 +25,7 @@ const menuItems = [
     {
         title: 'Produtos',
         icon: '',
-        url: '/adm/pages/produtos',
+        url: '/adm/produtos',
         acess: 1
     },
     {

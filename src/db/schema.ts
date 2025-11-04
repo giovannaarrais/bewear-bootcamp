@@ -10,7 +10,7 @@ import {
     uuid,
 } from "drizzle-orm/pg-core";
 import { Quantico } from "next/font/google";
-import { number } from "zod";
+import { email, number } from "zod";
 
 
 export const userTable = pgTable("user", {
@@ -208,6 +208,24 @@ export const orderItemTable = pgTable("order_item", {
     createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 
+export const levelAcess = pgEnum("level_acess", ['admin', 'master'])
+
+export const adminTable = pgTable('admins', {
+    id: uuid().primaryKey().defaultRandom(),
+    name: text().notNull(),
+    email: text().notNull(),
+    phone: text().notNull(),
+    levelAcess: levelAcess().notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    password: text("password").notNull()
+})
+
+export const adminSessionTable = pgTable('admin_sessions', {
+    id: uuid().defaultRandom().primaryKey(),
+    adminId: uuid("admin_id").notNull().references(() => adminTable.id),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow()
+})
 
 
 // --------------------------------- RELACIONAMENTOS -------------------------------
