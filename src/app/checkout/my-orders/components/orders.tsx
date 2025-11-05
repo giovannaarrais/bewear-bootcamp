@@ -70,39 +70,42 @@ const Orders = ({ orders }: OrdersProps) => {
 
     return (
         <>
-        {orders.map((order) => (
+        {orders.map((order, i) => (
             <Card key={order.id} className="py-3">
             <CardContent>
                 <Accordion type="single" collapsible>
-                <Button 
-                    size="sm"
-                    onClick={() => handlePayOrder(order.id)}
-                >
-                    Realizar Pagamento
-                </Button>
                 <AccordionItem value={order.id}>
                     <AccordionTrigger>
-                    <div className="flex flex-col items-start space-y-1">
-                        <p>
-                        Pedido feito em {""}
-                        {new Date(order.createdAt).toLocaleDateString(
-                            "pt-BR",
-                        )} às {""}
-                        {new Date(order.createdAt).toLocaleTimeString("pt-BR", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        })}
-                        </p>
+                    <div className="flex justify-between items-start space-y-1 w-full">
+                        <div>
+                            <strong>Número do Pedido</strong> <br />
+                            #{i + 1}
+                        </div>
 
-                        {order.status === "paid" && <Badge>Pago</Badge>}
+                        <div className="flex flex-col text-center">
+                            <strong>Data/Hora</strong> 
+                            {""}
+                            {new Date(order.createdAt).toLocaleDateString(
+                                "pt-BR",
+                            )} às {""}
+                            {new Date(order.createdAt).toLocaleTimeString("pt-BR", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })}
+                        </div>
 
-                        {order.status === "pending" && (
-                            <Badge variant="outline">Pagamento pendente</Badge>
-                        )}
+                        <div className="flex flex-col text-center">
+                            <strong>Status:</strong>
+                            {order.status === "paid" && <Badge className="text-green-600">Pago</Badge>}
 
-                        {order.status === "canceled" && (
-                        <Badge variant="destructive">Cancelado</Badge>
-                        )}
+                            {order.status === "pending" && (
+                                <Badge variant="outline">Pagamento pendente</Badge>
+                            )}
+
+                            {order.status === "canceled" && (
+                            <Badge variant="destructive">Cancelado</Badge>
+                            )}
+                        </div>
                     </div>
                     </AccordionTrigger>
                     <AccordionContent>
@@ -167,6 +170,16 @@ const Orders = ({ orders }: OrdersProps) => {
                         </div>
                     </CardContent>
                     </AccordionContent>
+                    <div className="flex justify-end">
+                        <Button 
+                            size="sm"
+                            variant='secondary'
+                            className="underline text-[12px]"
+                            onClick={() => handlePayOrder(order.id)}
+                        >
+                            Realizar Pagamento
+                        </Button>
+                    </div>
                 </AccordionItem>
                 </Accordion>
             </CardContent>

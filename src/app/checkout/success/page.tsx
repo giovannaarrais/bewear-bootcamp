@@ -20,7 +20,6 @@ import {
 const CheckoutSuccessPage = () => {
     return (
         <>
-        <Header></Header>
         <Dialog 
                 open={true} 
             >
