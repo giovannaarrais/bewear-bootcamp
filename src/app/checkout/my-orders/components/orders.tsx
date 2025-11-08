@@ -5,6 +5,7 @@ import { House, MailCheck, UserRoundCheck } from "lucide-react";
 import Image from "next/image";
 
 import { createCheckoutSession } from "@/actions/create-checkout-session";
+import { POST } from "@/app/api/stripe/webhook/route";
 import {
   Accordion,
   AccordionContent,
@@ -17,6 +18,7 @@ import { Card, CardContent} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { orderTable } from "@/db/schema";
 import { FormatCentsToBRL } from "@/helpers/money";
+import { useFinishOrder } from "@/hooks/mutations/use-finish-order";
 
 interface OrdersProps {
     orders: Array<{
@@ -50,25 +52,33 @@ interface OrdersProps {
 const Orders = ({ orders }: OrdersProps) => {
 
     const handlePayOrder = async (orderId: string) => {
-        if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-        throw new Error("Stripe publishable key is not set");
-        }
+        try {
+            // Verifica se a chave pública está definida
+            if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+                throw new Error("Stripe publishable key not set");
+            }
+        
+            // 🔹 Chama a server action diretamente
+            const checkoutSession = await createCheckoutSession({ orderId });
+        
+            // 🔹 Carrega Stripe no navegador
+            const stripe = await loadStripe(
+                process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+            );
+        
+            if (!stripe) {
+                throw new Error("Failed to load Stripe");
+            }
+        
+            // 🔹 Redireciona para o checkout
+            await stripe.redirectToCheckout({
+                sessionId: checkoutSession.id,
+            });
 
-        const checkoutSession = await createCheckoutSession({
-        orderId,
-        });
-
-        const stripe = await loadStripe(
-        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-        );
-
-        if (!stripe) {
-        throw new Error("Failed to load Stripe");
-        }
-
-        await stripe.redirectToCheckout({
-        sessionId: checkoutSession.id,
-        });
+            } catch (error) {
+                console.error("Erro ao iniciar pagamento:", error);
+                alert("Erro ao tentar iniciar pagamento. Tente novamente.");
+            }
     };
 
     return (
@@ -214,16 +224,18 @@ const Orders = ({ orders }: OrdersProps) => {
                         </Card>
                     </AccordionContent>
 
-                    <div className="flex justify-end">
-                        <Button 
-                            size="sm"
-                            variant='secondary'
-                            className="underline text-[12px]"
-                            onClick={() => handlePayOrder(order.id)}
-                        >
-                            Realizar Pagamento
-                        </Button>
-                    </div>
+                    {order.status == 'pending' && (
+                        <div className="flex justify-end">
+                            <Button 
+                                size="sm"
+                                variant='secondary'
+                                className="text-[12px]"
+                                onClick={() => handlePayOrder(order.id)}
+                            >
+                                Realizar Pagamento
+                            </Button>
+                        </div>
+                    )}
                 </AccordionItem>
                 </Accordion>
             </CardContent>
