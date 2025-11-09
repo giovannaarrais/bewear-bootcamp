@@ -9,7 +9,7 @@ export function ConditionalMain({
     const isAdmPage = pathname?.startsWith("/adm");
 
     return (
-        <main className={isAdmPage ? "relative" : "relative top-25"}>
+        <main className={`${isAdmPage ? "relative" : "relative top-25"} max-w-screen-xl mx-auto`}>
             {children}
         </main>
     );

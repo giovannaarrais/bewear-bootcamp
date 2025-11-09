@@ -4,14 +4,13 @@ import {
     integer,
     pgEnum,
     pgTable,
-    primaryKey,
     text,
     timestamp,
     uuid,
 } from "drizzle-orm/pg-core";
-import { Quantico } from "next/font/google";
-import { email, number } from "zod";
 
+
+export const levelAcess = pgEnum("level_acess", ['user', 'admin', 'master'])
 
 export const userTable = pgTable("user", {
     id: text("id").primaryKey(),
@@ -21,6 +20,7 @@ export const userTable = pgTable("user", {
         .$defaultFn(() => false)
         .notNull(),
     image: text("image"),
+    role: levelAcess().default('user').notNull(),
     createdAt: timestamp("created_at")
         .$defaultFn(() => /* @__PURE__ */ new Date())
         .notNull(),
@@ -208,24 +208,6 @@ export const orderItemTable = pgTable("order_item", {
     createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 
-export const levelAcess = pgEnum("level_acess", ['admin', 'master'])
-
-export const adminTable = pgTable('admins', {
-    id: uuid().primaryKey().defaultRandom(),
-    name: text().notNull(),
-    email: text().notNull(),
-    phone: text().notNull(),
-    levelAcess: levelAcess().notNull(),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    password: text("password").notNull()
-})
-
-export const adminSessionTable = pgTable('admin_sessions', {
-    id: uuid().defaultRandom().primaryKey(),
-    adminId: uuid("admin_id").notNull().references(() => adminTable.id),
-    expiresAt: timestamp("expires_at").notNull(),
-    createdAt: timestamp('created_at').notNull().defaultNow()
-})
 
 
 // --------------------------------- RELACIONAMENTOS -------------------------------

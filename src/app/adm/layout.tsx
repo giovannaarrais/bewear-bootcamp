@@ -6,7 +6,8 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { adminAuth } from "@/lib/auth-admin";
+import { getUserByRole } from "@/data/users/get";
+import { auth } from "@/lib/auth";
 
 import AppSidebar from "./components/sidebar";
 
@@ -14,23 +15,30 @@ export default async function AdmLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
 
-    // const session = await adminAuth.api.getSession({
-    //     headers: await headers()
-    // })
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
 
-    // if(!session?.user) {
-    //     redirect("/adm/login")
-    // }
+    const userId = String(session?.session.userId);
+    
+    const userByRole = await getUserByRole(userId)
+    console.log(userByRole)
+
+    if(userByRole?.role == 'user' || userByRole?.role == null) {
+        redirect("/")
+    }
 
     return (
-        <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-                <SidebarTrigger className="-ml-2 z-50" />
-                <main className="flex flex-1 flex-col gap-4 p-4">
-                    {children}
-                </main>
-            </SidebarInset>
-        </SidebarProvider>
+        <>
+            <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>
+                    <SidebarTrigger className="-ml-2 z-50" />
+                    <main className="p-5">
+                        {children}
+                    </main>
+                </SidebarInset>
+            </SidebarProvider>
+        </>
     );
 }
