@@ -54,7 +54,7 @@ const Cart = () => {
               </h4>
             </div>
           )}
-          {cart?.items.length && (
+          {cart?.items && cart?.items.length > 0  && (
             <div className="flex h-full max-h-full flex-col gap-5 overflow-hidden">
               <ScrollArea className="h-full">
                 <div className="flex h-full flex-col">
