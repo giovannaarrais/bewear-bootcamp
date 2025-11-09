@@ -1,7 +1,6 @@
 
 import { getProducts } from "@/data/products/get";
 
-import TableProducts from "./components/table-products";
 
 export default async function ProdutosPage() {
 
@@ -14,7 +13,6 @@ export default async function ProdutosPage() {
       <p className="text-muted-foreground">Gerenciar produtos</p>
 
       <section>
-        <TableProducts products={products}/>
       </section>
     </div>
   );
