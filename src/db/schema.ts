@@ -4,14 +4,13 @@ import {
     integer,
     pgEnum,
     pgTable,
-    primaryKey,
     text,
     timestamp,
     uuid,
 } from "drizzle-orm/pg-core";
-import { Quantico } from "next/font/google";
-import { number } from "zod";
 
+
+export const levelAcess = pgEnum("level_acess", ['user', 'admin', 'master'])
 
 export const userTable = pgTable("user", {
     id: text("id").primaryKey(),
@@ -21,6 +20,7 @@ export const userTable = pgTable("user", {
         .$defaultFn(() => false)
         .notNull(),
     image: text("image"),
+    role: levelAcess().default('user').notNull(),
     createdAt: timestamp("created_at")
         .$defaultFn(() => /* @__PURE__ */ new Date())
         .notNull(),
