@@ -97,12 +97,12 @@ const Orders = ({ orders }: OrdersProps) => {
         )}
 
         {orders.map((order, i) => (
-            <Card key={order.id} className="py-3">
-            <CardContent>
+            <Card key={order.id} className="py-2">
+            <CardContent className="sm:px-6 px-3">
                 <Accordion type="single" collapsible >
                 <AccordionItem value={order.id} >
                     <AccordionTrigger >
-                    <div className="flex justify-between items-start space-y-1 w-full">
+                    <div className="flex justify-between items-start space-y-1 w-full sm:text-sm text-[11px]">
                         <div>
                             <strong>Número do Pedido</strong> <br />
                             #{i + 1}
@@ -134,7 +134,7 @@ const Orders = ({ orders }: OrdersProps) => {
                         </div>
                     </div>
                     </AccordionTrigger>
-                    <AccordionContent className="flex gap-3">
+                    <AccordionContent className="flex gap-3 md:flex-row flex-col">
 
                         <Card className="flex-1">
                             <CardContent>
