@@ -20,7 +20,7 @@ const CheckoutCancelPage = () => {
         <DialogContent>
           <DialogHeader>
             <Image
-              src="/msgs/cancel_pay.svg"
+              src="/msgs/cancel-pay.svg"
               alt="Imagem ilustrativa de sucesso"
               width={251}
               height={233}
