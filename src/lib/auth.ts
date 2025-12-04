@@ -34,4 +34,3 @@ export const auth = betterAuth({
     modelName: "verificationTable",
   }
 });
-console.log('NEXT_PUBLIC_APP_URL: ', process.env.NEXT_PUBLIC_APP_URL,'NEXT_PUBLIC_APP_URL: ', process.env.GOOGLE_CLIENT_ID)
